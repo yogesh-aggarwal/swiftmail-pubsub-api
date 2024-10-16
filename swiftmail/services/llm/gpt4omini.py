@@ -1,14 +1,16 @@
+from typing import override
 from openai import OpenAI
 
 from swiftmail.core.constants import OPENAI_API_KEY
 
-from . import LLMService
+from . import LLMPrompt, LLMService
 
 
 class GPT4oMini(LLMService):
     model = "gpt-4o-mini"
 
-    def run(self, messages):
+    @override
+    def run(self, messages: LLMPrompt):
         client = OpenAI(api_key=OPENAI_API_KEY)
 
         res = client.chat.completions.create(

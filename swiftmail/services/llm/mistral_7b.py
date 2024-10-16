@@ -1,14 +1,16 @@
+from typing import override
 from huggingface_hub import InferenceClient
 
 from swiftmail.core.constants import HF_API_KEY
 
-from . import LLMService
+from . import LLMPrompt, LLMService
 
 
 class Mistral7B(LLMService):
     model = "mistralai/Mistral-7B-Instruct-v0.3"
 
-    def run(self, messages):
+    @override
+    def run(self, messages: LLMPrompt):
         client = InferenceClient(model=self.model, token=HF_API_KEY)
 
         res = client.chat_completion(
