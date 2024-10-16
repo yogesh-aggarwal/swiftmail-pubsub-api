@@ -10,7 +10,7 @@ seed_db:
 
 experiment:
 	clear
-  @poetry run experiment
+	@poetry run experiment
 
 setup:
 	clear
