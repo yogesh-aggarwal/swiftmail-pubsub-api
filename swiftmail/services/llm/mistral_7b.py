@@ -10,12 +10,14 @@ class Mistral7B(LLMService):
     model = "mistralai/Mistral-7B-Instruct-v0.3"
 
     @override
-    def run(self, messages: LLMPrompt):
+    def run(self, messages: LLMPrompt, temperature: float | None = None) -> str | None:
+        temperature = temperature if temperature is not None else 0
+
         client = InferenceClient(model=self.model, token=HF_API_KEY)
 
         res = client.chat_completion(
             messages.to_dict(),
-            temperature=0,
+            temperature=temperature,
             max_tokens=10_000,
         )
         if not res.choices:

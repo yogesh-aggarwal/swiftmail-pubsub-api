@@ -10,13 +10,16 @@ class GPT4oMini(LLMService):
     model = "gpt-4o-mini"
 
     @override
-    def run(self, messages: LLMPrompt):
+    def run(self, messages: LLMPrompt, temperature: float | None = None) -> str | None:
+        temperature = temperature if temperature is not None else 0
+
         client = OpenAI(api_key=OPENAI_API_KEY)
 
         res = client.chat.completions.create(
             model=self.model,
             messages=messages.to_dict(),  # type: ignore
             max_tokens=16_000,
+            temperature=temperature,
         )
         if not res.choices:
             return None

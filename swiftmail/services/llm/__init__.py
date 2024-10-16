@@ -1,12 +1,13 @@
 import shutil
 from abc import ABC
+from typing import Literal
 
 
 class LLMMessage:
-    role: str
+    role: Literal["user"] | Literal["system"]
     content: str
 
-    def __init__(self, role: str, content: str):
+    def __init__(self, role: Literal["user"] | Literal["system"], content: str):
         self.role = role
         self.content = content
 
@@ -76,5 +77,5 @@ class LLMService(ABC):
     def __str__(self):
         return f"LLM: {self.kwargs}"
 
-    def run(self, messages: LLMPrompt) -> str | None:
+    def run(self, messages: LLMPrompt, temperature: float | None = None) -> str | None:
         raise NotImplementedError

@@ -16,6 +16,8 @@ Input:
   "user_bio": "",
   "email_html_content": "",
 
+  "enforce_not_spam": true/false,
+
   "user_defined_priorities": [],
   "user_defined_priority_rules": [],
 
@@ -34,13 +36,24 @@ Input:
 
 Output:
 {
-  "priority": "",
-  "labels": [],
   "spam": true/false,
-  "unsubscribe": unsubscribe link string or null,
-  "category": "",
+  "priority": "" or null,
+  "labels": [] or null,
+  "categories": [] or null,
+  "unsubscribe_link": unsubscribe link string or null,
 }
 
-Make sure you use the user's bio and really personalize the experience but from the given choices only.
+Here are some rules:
+0. Make sure you use the user's bio and really personalize the experience but from the given choices only. 
+1. The priority must be the highest priority from the user_defined_priorities list.
+2. The labels must be the labels from the user_defined_labels list which are applicable to the email.
+3. The spam must be true if the email seems like a probable spam (even if 1% chance) or contains any of the user_defined_spam_words.
+4. The unsubscribe_link must be the unsubscribe link string if the email contains any of the user_defined_unsubscribe_words.
+5. The categories must be category from the user_defined_categories list which is applicable to the email. Don't go after choosing multiple categories. It's not a rule. It's for the purpose to help user only. So if the email necessarily falls into multiple categories, then only choose multiple categories. Otherwise, choose the one which is most applicable.
+6. Keep a special check/eye on spams it must not pass the system check if it's likely a spam even 1%.
+7. If the email is spam, priority, labels, categories, and unsubscribe_link must be null.
+8. If the user has enforced the email to not be spam, then the email must not be spam even if it seems like a spam.
 
-You must not return anything else other than a valid JSON. The response must start with "{" and end with "}". The keys must be in the same order as given in the output JSON. The values must be in the same order as given in the input JSON. The values must be of the same type as described/indicated above.
+Note:
+1. You must not return anything else other than a valid JSON.
+2. The response must start with "{" and end with "}".

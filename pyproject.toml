@@ -24,6 +24,7 @@ asgiref = "^3.8.1"
 selenium = "^4.25.0"
 undetected-chromedriver = "^3.5.5"
 setuptools = "^75.1.0"
+rich = "^13.9.2"
 
 [tool.poetry.scripts]
 seed_db = "swiftmail.cmd.seed_db:main"
