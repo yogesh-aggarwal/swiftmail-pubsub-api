@@ -28,6 +28,7 @@ setuptools = "^75.1.0"
 [tool.poetry.scripts]
 seed_db = "swiftmail.cmd.seed_db:main"
 server = "swiftmail.cmd.server:main"
+experiement = "swiftmail.cmd.experiment:main"
 
 [build-system]
 requires = ["poetry-core"]

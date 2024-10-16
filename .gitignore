@@ -5,3 +5,5 @@ __pycache__/
 *.pyd
 
 credentials*.json
+
+swiftmail/cmd/experiment.py

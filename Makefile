@@ -8,6 +8,10 @@ seed_db:
 	clear
 	@poetry run seed_db
 
+experiment:
+	clear
+  @poetry run experiment
+
 setup:
 	clear
 	@poetry install
