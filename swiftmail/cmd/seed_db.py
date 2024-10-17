@@ -1,32 +1,45 @@
+import asyncio
+
 from swiftmail.core.firebase import USERS_COLLECTION, auth
+from swiftmail.api.models.user import *
 
 
-def _setup_users():
+async def _setup_user(name: str, email: str, password: str):
+    user = User(
+        id=email,
+        email=email,
+        name=name,
+        dp=f"https://picsum.photos/{email.split('@')[0]}/200/200",
+        credentials=UserCredentials(googleOAuth=None),
+        data=UserData(selfDescription=""),
+    )
+
     try:
-        auth.delete_user("yogeshdevaggarwal@gmail.com")
+        auth.delete_user(user.id)
     except:
         pass
     auth.create_user(
-        uid="yogeshdevaggarwal@gmail.com",
-        email="yogeshdevaggarwal@gmail.com",
+        uid=user.id,
+        email=user.email,
         email_verified=True,
-        password="12345678",
-        display_name="Yogesh Aggarwal",
+        display_name=user.name,
+        password=password,
     )
 
-    USERS_COLLECTION.document("yogeshdevaggarwal@gmail.com").set(
-        {
-            "id": "yogeshdevaggarwal@gmail.com",
-            "email": "yogeshdevaggarwal@gmail.com",
-            "name": "Yogesh Aggarwal",
-            "dp": "https://picsum.photos/seed/123/200/200",
-            "credentials": {
-                "google_oauth": None,
-            },
-            "data": {},
-        }
-    )
+    USERS_COLLECTION.document("yogeshdevaggarwal@gmail.com").set(user.model_dump())
+
+
+async def _setup_users():
+    users = [
+        ("Yogesh Aggarwal", "yogeshdevaggarwal@gmail.com", "12345678"),
+    ]
+
+    jobs = map(lambda x: _setup_user(*x), users)
+
+    await asyncio.gather(*jobs)
 
 
 def main():
-    _setup_users()
+    asyncio.run(_setup_users())
+
+    print("Done!")
