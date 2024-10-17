@@ -6,7 +6,7 @@ authors = ["Yogesh Aggarwal <yogeshdevaggarwal@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12.7"
+python = "^3.12"
 huggingface-hub = "^0.25.0"
 google-auth = "^2.34.0"
 google-auth-oauthlib = "^1.2.1"
