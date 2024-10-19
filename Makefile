@@ -1,4 +1,17 @@
+# Load .env file if it exists
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
+# Variables
 PRODUCTION_BRANCH=production
+
+# Commands
+
+ngrok:
+	clear
+	@ngrok http --url=${NGROK_DOMAIN} ${PORT}
 
 server:
 	clear
