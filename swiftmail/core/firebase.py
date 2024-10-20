@@ -10,3 +10,4 @@ db = firestore.client()
 auth = auth
 
 USERS_COLLECTION = db.collection("users")
+MESSAGES_COLLECTION = db.collection("messages")
