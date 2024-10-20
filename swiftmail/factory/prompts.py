@@ -7,7 +7,10 @@ class PromptFactory:
     @staticmethod
     def email_segregation(
         *,
+        # User about
         user_bio: str,
+        # Email
+        email_subject: str,
         email_html_content: str,
         # Config
         enforce_not_spam: bool,
@@ -35,6 +38,7 @@ class PromptFactory:
                 input_json=json.dumps(
                     {
                         "user_bio": user_bio,
+                        "email_subject": email_subject,
                         "email_html_content": email_html_content,
                         "enforce_not_spam": enforce_not_spam,
                         "user_defined_priorities": user_defined_priorities,

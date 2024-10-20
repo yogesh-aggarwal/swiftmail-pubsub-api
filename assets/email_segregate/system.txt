@@ -14,6 +14,7 @@ So basically, you are the backend of a smart email management system which will 
 Input:
 {
   "user_bio": "",
+  "email_subject": "",
   "email_html_content": "",
 
   "enforce_not_spam": true/false,
