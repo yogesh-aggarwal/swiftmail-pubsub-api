@@ -6,12 +6,33 @@ from swiftmail.api.models.user import *
 
 async def _setup_user(name: str, email: str, password: str):
     user = User(
-        id=email,
-        email=email,
+        id="yogeshdevaggarwal@gmail.com",
+        metadata=UserMetadata(lastSeen=0, dateCreated=0, dateUpdated=0),
         name=name,
-        dp=f"https://picsum.photos/{email.split('@')[0]}/200/200",
+        email=email,
+        dp="https://picsum.photos/seed/yogeshdevaggarwal/200/200",
+        data=UserData(
+            preferences=UserPreferences(
+                ai=UserAIPreferences(
+                    model="gpt4omini",
+                    customRules=[],
+                    selfDescription="I am a very busy person.",
+                ),
+                inbox=UserInboxPreferences(
+                    priorities=[],
+                    priorityRules=[],
+                    labels=[],
+                    labelRules=[],
+                    categories=[],
+                    categoryRules=[],
+                    spamWords=[],
+                    spamRules=[],
+                    unsubscribeWords=[],
+                    unsubscribeRules=[],
+                ),
+            ),
+        ),
         credentials=UserCredentials(googleOAuth=None),
-        data=UserData(selfDescription=""),
     )
 
     try:

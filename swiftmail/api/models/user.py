@@ -4,6 +4,12 @@ from pydantic import BaseModel, Field
 from swiftmail.core.firebase import USERS_COLLECTION, auth
 
 
+class UserMetadata(BaseModel):
+    last_seen: int = Field(..., alias="lastSeen")
+    date_created: int = Field(..., alias="dateCreated")
+    date_updated: int = Field(..., alias="dateUpdated")
+
+
 class UserOAuthCredentials(BaseModel):
     access_token: str = Field(..., alias="access_token")
     refresh_token: str = Field(..., alias="refresh_token")
@@ -13,14 +19,36 @@ class UserCredentials(BaseModel):
     google_oauth: UserOAuthCredentials | None = Field(..., alias="googleOAuth")
 
 
-class UserData(BaseModel):
+class UserAIPreferences(BaseModel):
+    model: str
+    custom_rules: list[str] = Field(..., alias="customRules")
     self_description: str = Field(..., alias="selfDescription")
 
 
-class UserMetadata(BaseModel):
-    last_seen: int = Field(..., alias="lastSeen")
-    date_created: int = Field(..., alias="dateCreated")
-    date_updated: int = Field(..., alias="dateUpdated")
+class UserInboxPreferences(BaseModel):
+    priorities: list[str] = Field(..., alias="priorities")
+    priority_rules: list[str] = Field(..., alias="priorityRules")
+
+    labels: list[str] = Field(..., alias="labels")
+    label_rules: list[str] = Field(..., alias="labelRules")
+
+    categories: list[str] = Field(..., alias="categories")
+    category_rules: list[str] = Field(..., alias="categoryRules")
+
+    spam_words: list[str] = Field(..., alias="spamWords")
+    spam_rules: list[str] = Field(..., alias="spamRules")
+
+    unsubscribe_words: list[str] = Field(..., alias="unsubscribeWords")
+    unsubscribe_rules: list[str] = Field(..., alias="unsubscribeRules")
+
+
+class UserPreferences(BaseModel):
+    ai: UserAIPreferences = Field(..., alias="ai")
+    inbox: UserInboxPreferences = Field(..., alias="inbox")
+
+
+class UserData(BaseModel):
+    preferences: UserPreferences = Field(..., alias="preferences")
 
 
 class User(BaseModel):
@@ -51,7 +79,27 @@ class User(BaseModel):
             email=email,
             dp=dp,
             name=name,
-            data=UserData(selfDescription=""),
+            data=UserData(
+                preferences=UserPreferences(
+                    ai=UserAIPreferences(
+                        model="gpt4omini",
+                        customRules=[],
+                        selfDescription="",
+                    ),
+                    inbox=UserInboxPreferences(
+                        priorities=[],
+                        priorityRules=[],
+                        labels=[],
+                        labelRules=[],
+                        categories=[],
+                        categoryRules=[],
+                        spamWords=[],
+                        spamRules=[],
+                        unsubscribeWords=[],
+                        unsubscribeRules=[],
+                    ),
+                ),
+            ),
             credentials=UserCredentials(googleOAuth=None),
         )
 
