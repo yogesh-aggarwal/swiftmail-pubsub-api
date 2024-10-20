@@ -17,8 +17,16 @@ class UserData(BaseModel):
     self_description: str = Field(..., alias="selfDescription")
 
 
+class UserMetadata(BaseModel):
+    last_seen: int = Field(..., alias="lastSeen")
+    date_created: int = Field(..., alias="dateCreated")
+    date_updated: int = Field(..., alias="dateUpdated")
+
+
 class User(BaseModel):
     id: str = Field(..., alias="id")
+    metadata: UserMetadata = Field(..., alias="metadata")
+
     dp: str = Field(..., alias="dp")
     email: str = Field(..., alias="email")
     name: str = Field(..., alias="name")
@@ -39,6 +47,7 @@ class User(BaseModel):
     def create(id: str, email: str, name: str, dp: str, password: str):
         user = User(
             id=id,
+            metadata=UserMetadata(lastSeen=0, dateCreated=0, dateUpdated=0),
             email=email,
             dp=dp,
             name=name,
