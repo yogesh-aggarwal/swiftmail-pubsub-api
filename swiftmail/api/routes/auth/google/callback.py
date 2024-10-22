@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import jsonify, request, redirect
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
@@ -56,4 +56,4 @@ def callback():
     access_token, refresh_token = flow.credentials.token, flow.credentials.refresh_token
     user.update_creds_google_oauth(UserOAuthCredentials(access_token=access_token, refresh_token=refresh_token))  # type: ignore
 
-    return jsonify({"message": "success"}), 200
+    return redirect("http://localhost:5173/settings")
