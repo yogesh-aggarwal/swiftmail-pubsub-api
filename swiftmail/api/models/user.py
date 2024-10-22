@@ -5,62 +5,62 @@ from swiftmail.core.firebase import USERS_COLLECTION, auth
 
 
 class UserMetadata(BaseModel):
-    last_seen: int = Field(..., alias="lastSeen")
-    date_created: int = Field(..., alias="dateCreated")
-    date_updated: int = Field(..., alias="dateUpdated")
+    last_seen: int = Field(...)
+    date_created: int = Field(...)
+    date_updated: int = Field(...)
 
 
 class UserOAuthCredentials(BaseModel):
-    access_token: str = Field(..., alias="access_token")
-    refresh_token: str = Field(..., alias="refresh_token")
+    access_token: str = Field(...)
+    refresh_token: str = Field(...)
 
 
 class UserCredentials(BaseModel):
-    google_oauth: UserOAuthCredentials | None = Field(..., alias="googleOAuth")
+    google_oauth: UserOAuthCredentials | None = Field(...)
 
 
 class UserAIPreferences(BaseModel):
     model: str
-    custom_rules: list[str] = Field(..., alias="customRules")
-    self_description: str = Field(..., alias="selfDescription")
+    custom_rules: list[str] = Field(...)
+    self_description: str = Field(...)
 
 
 class UserInboxPreferences(BaseModel):
-    priorities: list[str] = Field(..., alias="priorities")
-    priority_rules: list[str] = Field(..., alias="priorityRules")
+    priorities: list[str] = Field(...)
+    priority_rules: list[str] = Field(...)
 
-    labels: list[str] = Field(..., alias="labels")
-    label_rules: list[str] = Field(..., alias="labelRules")
+    labels: list[str] = Field(...)
+    label_rules: list[str] = Field(...)
 
-    categories: list[str] = Field(..., alias="categories")
-    category_rules: list[str] = Field(..., alias="categoryRules")
+    categories: list[str] = Field(...)
+    category_rules: list[str] = Field(...)
 
-    spam_words: list[str] = Field(..., alias="spamWords")
-    spam_rules: list[str] = Field(..., alias="spamRules")
+    spam_words: list[str] = Field(...)
+    spam_rules: list[str] = Field(...)
 
-    unsubscribe_words: list[str] = Field(..., alias="unsubscribeWords")
-    unsubscribe_rules: list[str] = Field(..., alias="unsubscribeRules")
+    unsubscribe_words: list[str] = Field(...)
+    unsubscribe_rules: list[str] = Field(...)
 
 
 class UserPreferences(BaseModel):
-    ai: UserAIPreferences = Field(..., alias="ai")
-    inbox: UserInboxPreferences = Field(..., alias="inbox")
+    ai: UserAIPreferences = Field(...)
+    inbox: UserInboxPreferences = Field(...)
 
 
 class UserData(BaseModel):
-    preferences: UserPreferences = Field(..., alias="preferences")
+    preferences: UserPreferences = Field(...)
 
 
 class User(BaseModel):
-    id: str = Field(..., alias="id")
-    metadata: UserMetadata = Field(..., alias="metadata")
+    id: str = Field(...)
+    metadata: UserMetadata = Field(...)
 
-    dp: str = Field(..., alias="dp")
-    email: str = Field(..., alias="email")
-    name: str = Field(..., alias="name")
+    dp: str = Field(...)
+    email: str = Field(...)
+    name: str = Field(...)
 
-    data: UserData = Field(..., alias="data")
-    credentials: UserCredentials = Field(..., alias="credentials")
+    data: UserData = Field(...)
+    credentials: UserCredentials = Field(...)
 
     @staticmethod
     def get_from_email(email: str):
@@ -69,13 +69,17 @@ class User(BaseModel):
             raise ValueError(f"User with email {email} not found")
         user = user[0].to_dict()
 
-        return User.model_validate(user)
+        try:
+            return User.model_validate(user)
+        except Exception as e:
+            print(e)
+            return None
 
     @staticmethod
     def create(id: str, email: str, name: str, dp: str, password: str):
         user = User(
             id=id,
-            metadata=UserMetadata(lastSeen=0, dateCreated=0, dateUpdated=0),
+            metadata=UserMetadata(last_seen=0, date_created=0, date_updated=0),
             email=email,
             dp=dp,
             name=name,
@@ -83,27 +87,27 @@ class User(BaseModel):
                 preferences=UserPreferences(
                     ai=UserAIPreferences(
                         model="gpt4omini",
-                        customRules=[],
-                        selfDescription="",
+                        custom_rules=[],
+                        self_description="",
                     ),
                     inbox=UserInboxPreferences(
                         priorities=[],
-                        priorityRules=[],
+                        priority_rules=[],
                         labels=[],
-                        labelRules=[],
+                        label_rules=[],
                         categories=[],
-                        categoryRules=[],
-                        spamWords=[],
-                        spamRules=[],
-                        unsubscribeWords=[],
-                        unsubscribeRules=[],
+                        category_rules=[],
+                        spam_words=[],
+                        spam_rules=[],
+                        unsubscribe_words=[],
+                        unsubscribe_rules=[],
                     ),
                 ),
             ),
-            credentials=UserCredentials(googleOAuth=None),
+            credentials=UserCredentials(google_oauth=None),
         )
 
-        USERS_COLLECTION.document(user.id).set(user.model_dump(by_alias=True))
+        USERS_COLLECTION.document(user.id).set(user.model_dump())
 
         try:
             auth.create_user(
@@ -121,4 +125,4 @@ class User(BaseModel):
 
     def update_creds_google_oauth(self, creds: UserOAuthCredentials | None):
         self.credentials.google_oauth = creds
-        USERS_COLLECTION.document(self.id).set(self.model_dump(by_alias=True))
+        USERS_COLLECTION.document(self.id).set(self.model_dump())

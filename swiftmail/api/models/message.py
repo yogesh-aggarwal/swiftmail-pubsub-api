@@ -5,23 +5,23 @@ from swiftmail.core.firebase import MESSAGES_COLLECTION
 
 
 class MessageMetadata(BaseModel):
-    date_updated: str = Field(..., alias="dateUpdated")
-    date_created: str = Field(..., alias="dateCreated")
+    date_updated: str = Field(...)
+    date_created: str = Field(...)
 
 
 class Message(BaseModel):
-    id: str = Field(..., title="Message ID", alias="id")
-    metadata: MessageMetadata = Field(..., title="Message Metadata", alias="metadata")
+    id: str = Field(...)
+    metadata: MessageMetadata = Field(...)
 
-    subject: str = Field(..., title="Subject")
-    html_content: str = Field(..., title="HTML Content")
+    subject: str = Field(...)
+    html_content: str = Field(...)
 
-    message_id: str = Field(..., title="Message ID", alias="messageID")
-    thread_id: str = Field(..., title="Thread ID", alias="threadID")
-    from_email: str = Field(..., title="From Email", alias="fromEmail")
-    to_email: str = Field(..., title="To Email", alias="toEmail")
-    cc_email: str = Field(..., title="CC Email", alias="ccEmail")
-    bcc_email: str = Field(..., title="BCC Email", alias="bccEmail")
+    message_id: str = Field(...)
+    thread_id: str = Field(...)
+    from_email: str = Field(...)
+    to_email: str = Field(...)
+    cc_email: str = Field(...)
+    bcc_email: str = Field(...)
 
     def create(self):
         MESSAGES_COLLECTION.document(self.id).set(self.model_dump())
