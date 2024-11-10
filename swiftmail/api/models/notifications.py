@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -24,9 +23,9 @@ class Notification(BaseModel):
     body: str = Field(..., alias="body")
     status: NotificationStatus = Field(..., alias="status")
 
-    date_dispatched: Optional[int] = Field(None, alias="date_dispatched")
-    date_delivered: Optional[int] = Field(None, alias="date_delivered")
-    date_failed: Optional[int] = Field(None, alias="date_failed")
+    date_dispatched: int | None = Field(None, alias="date_dispatched")
+    date_delivered: int | None = Field(None, alias="date_delivered")
+    date_failed: int | None = Field(None, alias="date_failed")
 
     def create(self):
         NOTIFICATIONS_COLLECTION.document(self.id).set(self.model_dump())

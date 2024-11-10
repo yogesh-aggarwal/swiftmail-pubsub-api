@@ -18,8 +18,8 @@ class MessageEmailData(BaseModel):
 class Message(BaseModel):
     id: str = Field(..., alias="id")
     user_id: str = Field(..., alias="user_id")
-    date_updated: str = Field(..., alias="date_updated")
-    date_created: str = Field(..., alias="date_created")
+    date_updated: int = Field(..., alias="date_updated")
+    date_created: int = Field(..., alias="date_created")
 
     email_data: MessageEmailData = Field(..., alias="email_data")
 
