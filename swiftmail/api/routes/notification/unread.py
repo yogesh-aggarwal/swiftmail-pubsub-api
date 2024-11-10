@@ -1,15 +1,15 @@
 from flask import jsonify, request
 from pydantic import BaseModel, Field
+
 from swiftmail.api.models.notification import Notification, NotificationStatus
 from swiftmail.api.models.user import User
 
 
 class RequestBody(BaseModel):
     notification_id: str = Field(..., alias="notification_id")
-    status: NotificationStatus = Field(..., alias="status")
 
 
-def status():
+def unread():
     user: User = getattr(request, "user", None)  # type:ignore
 
     # Step 1: Validate body
@@ -25,9 +25,9 @@ def status():
     if notification.user_id != user.id:
         return jsonify({"message": "unauthorized"}), 403
 
-    # Step 3: Update notification status to dismissed
+    # Step 3: Update notification status to unread
     try:
-        notification.update_status(body.status)
+        notification.update_status(NotificationStatus.UNREAD)
         return jsonify({"message": "success"}), 200
     except Exception as e:
         return jsonify({"message": "internal_server_error"}), 500
