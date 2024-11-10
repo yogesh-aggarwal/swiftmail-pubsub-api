@@ -5,62 +5,62 @@ from swiftmail.core.firebase import USERS_COLLECTION, auth
 
 
 class UserMetadata(BaseModel):
-    last_seen: int = Field(...)
-    date_created: int = Field(...)
-    date_updated: int = Field(...)
+    last_seen: int = Field(..., alias="last_seen")
+    date_created: int = Field(..., alias="date_created")
+    date_updated: int = Field(..., alias="date_updated")
 
 
 class UserOAuthCredentials(BaseModel):
-    access_token: str = Field(...)
-    refresh_token: str = Field(...)
+    access_token: str = Field(..., alias="access_token")
+    refresh_token: str = Field(..., alias="refresh_token")
 
 
 class UserCredentials(BaseModel):
-    google_oauth: UserOAuthCredentials | None = Field(...)
+    google_oauth: UserOAuthCredentials | None = Field(..., alias="google_oauth")
 
 
 class UserAIPreferences(BaseModel):
-    model: str
-    custom_rules: list[str] = Field(...)
-    self_description: str = Field(...)
+    model: str = Field(..., alias="model")
+    custom_rules: list[str] = Field(..., alias="custom_rules")
+    self_description: str = Field(..., alias="self_description")
 
 
 class UserInboxPreferences(BaseModel):
-    priorities: list[str] = Field(...)
-    priority_rules: list[str] = Field(...)
+    priorities: list[str] = Field(..., alias="priorities")
+    priority_rules: list[str] = Field(..., alias="priority_rules")
 
-    labels: list[str] = Field(...)
-    label_rules: list[str] = Field(...)
+    labels: list[str] = Field(..., alias="labels")
+    label_rules: list[str] = Field(..., alias="label_rules")
 
-    categories: list[str] = Field(...)
-    category_rules: list[str] = Field(...)
+    categories: list[str] = Field(..., alias="categories")
+    category_rules: list[str] = Field(..., alias="category_rules")
 
-    spam_words: list[str] = Field(...)
-    spam_rules: list[str] = Field(...)
+    spam_words: list[str] = Field(..., alias="spam_words")
+    spam_rules: list[str] = Field(..., alias="spam_rules")
 
-    unsubscribe_words: list[str] = Field(...)
-    unsubscribe_rules: list[str] = Field(...)
+    unsubscribe_words: list[str] = Field(..., alias="unsubscribe_words")
+    unsubscribe_rules: list[str] = Field(..., alias="unsubscribe_rules")
 
 
 class UserPreferences(BaseModel):
-    ai: UserAIPreferences = Field(...)
-    inbox: UserInboxPreferences = Field(...)
+    ai: UserAIPreferences = Field(..., alias="ai")
+    inbox: UserInboxPreferences = Field(..., alias="inbox")
 
 
 class UserData(BaseModel):
-    preferences: UserPreferences = Field(...)
+    preferences: UserPreferences = Field(..., alias="preferences")
 
 
 class User(BaseModel):
-    id: str = Field(...)
-    metadata: UserMetadata = Field(...)
+    id: str = Field(..., alias="id")
+    metadata: UserMetadata = Field(..., alias="metadata")
 
-    dp: str = Field(...)
-    email: str = Field(...)
-    name: str = Field(...)
+    dp: str = Field(..., alias="dp")
+    email: str = Field(..., alias="email")
+    name: str = Field(..., alias="name")
 
-    data: UserData = Field(...)
-    credentials: UserCredentials = Field(...)
+    data: UserData = Field(..., alias="data")
+    credentials: UserCredentials = Field(..., alias="credentials")
 
     @staticmethod
     def get_from_email(email: str):
