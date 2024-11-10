@@ -1,53 +1,117 @@
 import asyncio
+from datetime import datetime
 
-from swiftmail.core.firebase import USERS_COLLECTION, auth
-from swiftmail.api.models.user import *
+from swiftmail.api.models.user import User
+from swiftmail.api.models.thread import InboxThread
+from swiftmail.api.models.notifications import Notification, NotificationStatus
+from swiftmail.api.models.message import Message, MessageEmailData
+from swiftmail.api.models.digest import Digest
+from swiftmail.api.models.data import Data, DataType
+from swiftmail.api.models.dashboard import (
+    Dashboard,
+    DashboardSection,
+    DashboardSectionStatusEnum,
+)
 
 
 async def _setup_user(name: str, email: str, password: str):
-    user = User(
-        id="yogeshdevaggarwal@gmail.com",
-        metadata=UserMetadata(lastSeen=0, dateCreated=0, dateUpdated=0),
-        name=name,
+    user = User.create(
+        id=email,
         email=email,
+        name=name,
         dp="https://picsum.photos/seed/yogeshdevaggarwal/200/200",
-        data=UserData(
-            preferences=UserPreferences(
-                ai=UserAIPreferences(
-                    model="gpt4omini",
-                    customRules=[],
-                    selfDescription="I am a very busy person.",
-                ),
-                inbox=UserInboxPreferences(
-                    priorities=[],
-                    priorityRules=[],
-                    labels=[],
-                    labelRules=[],
-                    categories=[],
-                    categoryRules=[],
-                    spamWords=[],
-                    spamRules=[],
-                    unsubscribeWords=[],
-                    unsubscribeRules=[],
-                ),
-            ),
-        ),
-        credentials=UserCredentials(googleOAuth=None),
-    )
-
-    try:
-        auth.delete_user(user.id)
-    except:
-        pass
-    auth.create_user(
-        uid=user.id,
-        email=user.email,
-        email_verified=True,
-        display_name=user.name,
         password=password,
     )
 
-    USERS_COLLECTION.document("yogeshdevaggarwal@gmail.com").set(user.model_dump())
+    # Create related data for the user
+    thread = InboxThread(
+        id="thread1",
+        user_id=user.id,
+        date_created=int(datetime.now().timestamp()),
+        date_updated=int(datetime.now().timestamp()),
+        title="Sample Thread",
+        description="This is a sample thread",
+        summary="Sample summary",
+        thread_id="thread1",
+    )
+    thread.create()
+
+    notification = Notification(
+        id="notification1",
+        user_id=user.id,
+        date_created=int(datetime.now().timestamp()),
+        date_updated=int(datetime.now().timestamp()),
+        date_delivered=None,
+        date_dispatched=None,
+        date_failed=None,
+        title="Sample Notification",
+        body="This is a sample notification",
+        status=NotificationStatus.DISPATCHED,
+    )
+    notification.create()
+
+    message = Message(
+        id="message1",
+        user_id=user.id,
+        date_created=int(datetime.now().timestamp()),
+        date_updated=int(datetime.now().timestamp()),
+        email_data=MessageEmailData(
+            subject="Sample Subject",
+            html_content="<p>This is a sample email content</p>",
+            message_id="message1",
+            thread_id="thread1",
+            from_email="from@example.com",
+            to_email="to@example.com",
+            cc_email="cc@example.com",
+            bcc_email="bcc@example.com",
+        ),
+        summary="Sample summary",
+        template=None,
+        priorities="high",
+        categories=["category1"],
+        labels=["label1"],
+        digests=["digest1"],
+    )
+    message.create()
+
+    digest = Digest(
+        id="digest1",
+        user_id=user.id,
+        date_created=int(datetime.now().timestamp()),
+        date_updated=int(datetime.now().timestamp()),
+        title="Sample Digest",
+        description="This is a sample digest",
+    )
+    digest.create()
+
+    data = Data(
+        id="data1",
+        user_id=user.id,
+        date_created=int(datetime.now().timestamp()),
+        type=DataType.EMAIL_RECEIVED,
+        data={"key": "value"},
+    )
+    data.create()
+
+    dashboard_section = DashboardSection(
+        id="section1",
+        date_updated=int(datetime.now().timestamp()),
+        title="Sample Section",
+        description="This is a sample section",
+        status=DashboardSectionStatusEnum.READY,
+        time_range_start=int(datetime.now().timestamp()),
+        time_range_end=int(datetime.now().timestamp()),
+        data={"key": "value"},
+    )
+
+    dashboard = Dashboard(
+        id="dashboard1",
+        user_id=user.id,
+        date_created=int(datetime.now().timestamp()),
+        date_updated=int(datetime.now().timestamp()),
+        sections={"section1": dashboard_section},
+    )
+    dashboard.create()
 
 
 async def _setup_users():
@@ -64,3 +128,7 @@ def main():
     asyncio.run(_setup_users())
 
     print("Done!")
+
+
+if __name__ == "__main__":
+    main()
