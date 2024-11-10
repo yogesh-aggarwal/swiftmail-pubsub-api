@@ -1,6 +1,7 @@
 from flask import jsonify, request
 from pydantic import BaseModel, Field
-from swiftmail.api.models.notification import Notification
+
+from swiftmail.api.models.notification import Notification, NotificationStatus
 from swiftmail.api.models.user import User
 
 
@@ -26,7 +27,7 @@ def dismiss():
 
     # Step 3: Update notification status to dismissed
     try:
-        notification.mark_dismiss()
+        notification.update_status(NotificationStatus.DISMISSED)
         return jsonify({"message": "success"}), 200
     except Exception as e:
         return jsonify({"message": "internal_server_error"}), 500
