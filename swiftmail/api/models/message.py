@@ -15,12 +15,27 @@ class MessageEmailData(BaseModel):
     bcc_email: str = Field(..., alias="bcc_email")
 
 
+class MessageFlags(BaseModel):
+    is_archived: bool = Field(..., alias="is_archived")
+    is_starred: bool = Field(..., alias="is_starred")
+    is_trash: bool = Field(..., alias="is_trash")
+    is_draft: bool = Field(..., alias="is_draft")
+    is_sent: bool = Field(..., alias="is_sent")
+    is_received: bool = Field(..., alias="is_received")
+    is_read: bool = Field(..., alias="is_read")
+    is_unread: bool = Field(..., alias="is_unread")
+    is_deleted: bool = Field(..., alias="is_deleted")
+    is_junk: bool = Field(..., alias="is_junk")
+    is_spam: bool = Field(..., alias="is_spam")
+
+
 class Message(BaseModel):
     id: str = Field(..., alias="id")
     user_id: str = Field(..., alias="user_id")
     date_updated: int = Field(..., alias="date_updated")
     date_created: int = Field(..., alias="date_created")
 
+    flags: MessageFlags = Field(..., alias="flags")
     email_data: MessageEmailData = Field(..., alias="email_data")
 
     summary: str = Field(..., alias="summary")

@@ -1,17 +1,17 @@
 import asyncio
 from datetime import datetime
 
-from swiftmail.api.models.user import User
-from swiftmail.api.models.thread import InboxThread
-from swiftmail.api.models.notification import Notification, NotificationStatus
-from swiftmail.api.models.message import Message, MessageEmailData
-from swiftmail.api.models.digest import Digest
-from swiftmail.api.models.data import Data, DataType
 from swiftmail.api.models.dashboard import (
     Dashboard,
     DashboardSection,
     DashboardSectionStatusEnum,
 )
+from swiftmail.api.models.data import Data, DataType
+from swiftmail.api.models.digest import Digest
+from swiftmail.api.models.message import Message, MessageEmailData, MessageFlags
+from swiftmail.api.models.notification import Notification, NotificationStatus
+from swiftmail.api.models.thread import Thread, ThreadFlags
+from swiftmail.api.models.user import User
 
 
 async def _setup_user(name: str, email: str, password: str):
@@ -24,7 +24,7 @@ async def _setup_user(name: str, email: str, password: str):
     )
 
     # Create related data for the user
-    thread = InboxThread(
+    thread = Thread(
         id="thread1",
         user_id=user.id,
         date_created=int(datetime.now().timestamp()),
@@ -33,6 +33,17 @@ async def _setup_user(name: str, email: str, password: str):
         description="This is a sample thread",
         summary="Sample summary",
         thread_id="thread1",
+        flags=ThreadFlags(
+            is_muted=False,
+            is_starred=False,
+            is_trash=False,
+            is_archived=False,
+            is_read=False,
+            is_unread=True,
+            is_deleted=False,
+            is_junk=False,
+            is_spam=False,
+        ),
     )
     thread.create()
 
@@ -64,6 +75,19 @@ async def _setup_user(name: str, email: str, password: str):
             to_email="to@example.com",
             cc_email="cc@example.com",
             bcc_email="bcc@example.com",
+        ),
+        flags=MessageFlags(
+            is_archived=False,
+            is_starred=False,
+            is_trash=False,
+            is_draft=False,
+            is_sent=True,
+            is_received=True,
+            is_read=False,
+            is_unread=True,
+            is_deleted=False,
+            is_junk=False,
+            is_spam=False,
         ),
         summary="Sample summary",
         template=None,
