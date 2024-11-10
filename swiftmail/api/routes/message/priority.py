@@ -7,7 +7,7 @@ from swiftmail.api.models.user import User
 
 class RequestBody(BaseModel):
     message_id: str = Field(..., alias="message_id")
-    priority_id: int = Field(..., alias="priority_id")
+    priority_ids: list[str] = Field(..., alias="priority_ids")
 
 
 def priority():
@@ -26,8 +26,9 @@ def priority():
     if message.user_id != user.id:
         return jsonify({"message": "unauthorized"}), 403
 
-    # Step 3: TODO: perform action
+    # Step 3: Update message priority_ids
     try:
+        message.update_priorities(body.priority_ids)
         return jsonify({"message": "success"}), 200
     except Exception as e:
         return jsonify({"message": "internal_server_error"}), 500
