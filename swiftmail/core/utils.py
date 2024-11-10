@@ -1,4 +1,5 @@
 import functools
+import uuid
 
 
 def with_retry(tries: int):
@@ -16,3 +17,7 @@ def with_retry(tries: int):
         return wrapper
 
     return decorator
+
+
+def generate_id():
+    return str(uuid.uuid4())
