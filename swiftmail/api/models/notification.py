@@ -38,7 +38,7 @@ class Notification(BaseModel):
     def create(self):
         NOTIFICATIONS_COLLECTION.document(self.id).set(self.model_dump())
 
-    def dismiss(self):
+    def mark_dismiss(self):
         self.status = NotificationStatus.DISMISSED
         self.date_updated = int(time.time())
         NOTIFICATIONS_COLLECTION.document(self.id).set(self.model_dump())

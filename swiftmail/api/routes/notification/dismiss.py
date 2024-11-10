@@ -26,7 +26,7 @@ def dismiss():
 
     # Step 3: Update notification status to dismissed
     try:
-        notification.dismiss()
+        notification.mark_dismiss()
         return jsonify({"message": "success"}), 200
     except Exception as e:
         return jsonify({"message": "internal_server_error"}), 500
