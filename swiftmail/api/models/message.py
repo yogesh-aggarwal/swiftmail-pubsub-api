@@ -31,5 +31,15 @@ class Message(BaseModel):
     labels: list[str] = Field(..., alias="labels")
     digests: list[str] = Field(..., alias="digests")
 
+    @staticmethod
+    def get_by_id(message_id: str) -> "Message | None":
+        message = MESSAGES_COLLECTION.document(message_id).get()
+        if message.exists:
+            return Message(**message.to_dict())  # type:ignore
+        return None
+
     def create(self):
         MESSAGES_COLLECTION.document(self.id).set(self.model_dump())
+
+    def update_summary(self, summary: str):
+        MESSAGES_COLLECTION.document(self.id).update({"summary": summary})
