@@ -26,7 +26,7 @@ def resummarize():
     if message.user_id != user.id:
         return jsonify({"message": "unauthorized"}), 403
 
-    # Step 3: TODO: Update message status to dismissed
+    # Step 3: TODO: perform action
     try:
         message.update_summary(message.summary)
         return jsonify({"message": "success"}), 200
