@@ -3,7 +3,7 @@ from datetime import datetime
 
 from swiftmail.api.models.user import User
 from swiftmail.api.models.thread import InboxThread
-from swiftmail.api.models.notifications import Notification, NotificationStatus
+from swiftmail.api.models.notification import Notification, NotificationStatus
 from swiftmail.api.models.message import Message, MessageEmailData
 from swiftmail.api.models.digest import Digest
 from swiftmail.api.models.data import Data, DataType
