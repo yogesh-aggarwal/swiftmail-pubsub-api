@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 
+from swiftmail.core.firebase import THREADS_COLLECTION
+
 
 class InboxThread(BaseModel):
     id: str = Field(..., alias="id")
@@ -12,3 +14,6 @@ class InboxThread(BaseModel):
 
     summary: str = Field(..., alias="summary")
     thread_id: str = Field(..., alias="thread_id")
+
+    def create(self):
+        THREADS_COLLECTION.document(self.id).set(self.model_dump())

@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 
+from swiftmail.core.firebase import DIGESTS_COLLECTION
+
 
 class Digest(BaseModel):
     id: str = Field(..., alias="id")
@@ -9,3 +11,6 @@ class Digest(BaseModel):
 
     title: str = Field(..., alias="title")
     description: str = Field(..., alias="description")
+
+    def create(self):
+        DIGESTS_COLLECTION.document(self.id).set(self.model_dump())

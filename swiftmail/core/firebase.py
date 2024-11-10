@@ -9,5 +9,10 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 auth = auth
 
-USERS_COLLECTION = db.collection("users")
+DASHBOARDS_COLLECTION = db.collection("dashboards")
+DATA_COLLECTION = db.collection("data")
+DIGESTS_COLLECTION = db.collection("digests")
 MESSAGES_COLLECTION = db.collection("messages")
+NOTIFICATIONS_COLLECTION = db.collection("notifications")
+THREADS_COLLECTION = db.collection("threads")
+USERS_COLLECTION = db.collection("users")

@@ -3,6 +3,8 @@ from typing import Dict, Generic, TypeVar
 
 from pydantic import BaseModel, Field
 
+from swiftmail.core.firebase import DASHBOARDS_COLLECTION
+
 T = TypeVar("T")
 
 
@@ -34,3 +36,6 @@ class Dashboard(BaseModel):
     date_created: int = Field(..., alias="date_created")
 
     sections: Dict[str, DashboardSection] = Field(..., alias="sections")
+
+    def create(self):
+        DASHBOARDS_COLLECTION.document(self.id).set(self.model_dump())

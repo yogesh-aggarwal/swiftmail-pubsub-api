@@ -1,6 +1,9 @@
-from pydantic import BaseModel, Field
-from typing import Optional
 from enum import Enum
+from typing import Optional
+
+from pydantic import BaseModel, Field
+
+from swiftmail.core.firebase import NOTIFICATIONS_COLLECTION
 
 
 class NotificationStatus(str, Enum):
@@ -24,3 +27,6 @@ class Notification(BaseModel):
     date_dispatched: Optional[int] = Field(None, alias="date_dispatched")
     date_delivered: Optional[int] = Field(None, alias="date_delivered")
     date_failed: Optional[int] = Field(None, alias="date_failed")
+
+    def create(self):
+        NOTIFICATIONS_COLLECTION.document(self.id).set(self.model_dump())

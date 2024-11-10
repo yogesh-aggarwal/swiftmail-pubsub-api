@@ -3,6 +3,8 @@ from typing import Dict
 
 from pydantic import BaseModel, Field
 
+from swiftmail.core.firebase import DATA_COLLECTION
+
 
 class DataType(str, Enum):
     DELIVERY_TIME = "delivery_time"
@@ -17,3 +19,6 @@ class Data(BaseModel):
 
     type: DataType = Field(..., alias="type")
     data: Dict = Field(..., alias="data")
+
+    def create(self):
+        DATA_COLLECTION.document(self.id).set(self.model_dump())

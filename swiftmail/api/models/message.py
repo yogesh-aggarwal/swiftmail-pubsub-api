@@ -1,4 +1,3 @@
-from google.cloud.firestore_v1.base_query import FieldFilter
 from pydantic import BaseModel, Field
 
 from swiftmail.core.firebase import MESSAGES_COLLECTION
