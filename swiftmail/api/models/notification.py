@@ -1,3 +1,4 @@
+import time
 from enum import Enum
 
 from pydantic import BaseModel, Field
@@ -27,5 +28,17 @@ class Notification(BaseModel):
     date_delivered: int | None = Field(None, alias="date_delivered")
     date_failed: int | None = Field(None, alias="date_failed")
 
+    @staticmethod
+    def get_by_id(id: str) -> "Notification | None":
+        doc = NOTIFICATIONS_COLLECTION.document(id).get()
+        if doc.exists:
+            return Notification(**doc.to_dict())  # type:ignore
+        return None
+
     def create(self):
+        NOTIFICATIONS_COLLECTION.document(self.id).set(self.model_dump())
+
+    def dismiss(self):
+        self.status = NotificationStatus.DISMISSED
+        self.date_updated = int(time.time())
         NOTIFICATIONS_COLLECTION.document(self.id).set(self.model_dump())
