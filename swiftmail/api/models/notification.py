@@ -11,6 +11,7 @@ class NotificationStatus(str, Enum):
     DISPATCHED = "dispatched"
     DELIVERED = "delivered"
     READ = "read"
+    UNREAD = "unread"
     DISMISSED = "dismissed"
 
 
@@ -38,7 +39,7 @@ class Notification(BaseModel):
     def create(self):
         NOTIFICATIONS_COLLECTION.document(self.id).set(self.model_dump())
 
-    def mark_dismiss(self):
-        self.status = NotificationStatus.DISMISSED
+    def update_status(self, status: NotificationStatus):
+        self.status = status
         self.date_updated = int(time.time())
-        NOTIFICATIONS_COLLECTION.document(self.id).set(self.model_dump())
+        NOTIFICATIONS_COLLECTION.document(self.id).update(self.model_dump())
