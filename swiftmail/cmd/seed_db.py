@@ -10,6 +10,7 @@ from swiftmail.api.models.data import Data, DataType
 from swiftmail.api.models.digest import Digest
 from swiftmail.api.models.message import Message, MessageEmailData, MessageFlags
 from swiftmail.api.models.notification import Notification, NotificationStatus
+from swiftmail.api.models.reminder import Reminder, ReminderState, ReminderType
 from swiftmail.api.models.thread import Thread, ThreadFlags
 from swiftmail.api.models.user import User
 
@@ -46,6 +47,20 @@ async def _setup_user(name: str, email: str, password: str):
         ),
     )
     thread.create()
+
+    reminder = Reminder(
+        id="reminder1",
+        user_id=user.id,
+        date_created=int(datetime.now().timestamp()),
+        date_updated=int(datetime.now().timestamp()),
+        scheduled_at=int(datetime.now().timestamp() + 3600),  # 1 hour later
+        time_zone="UTC",
+        message_id="message1",
+        thread_id="thread1",
+        type=ReminderType.FOLLOW_UP,
+        state=ReminderState.NOT_STARTED,
+    )
+    reminder.create()
 
     notification = Notification(
         id="notification1",
