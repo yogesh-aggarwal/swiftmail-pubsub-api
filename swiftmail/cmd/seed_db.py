@@ -91,7 +91,7 @@ async def _setup_user(name: str, email: str, password: str):
         ),
         summary="Sample summary",
         template=None,
-        priorities="high",
+        priorities=["high"],
         categories=["category1"],
         labels=["label1"],
         digests=["digest1"],
