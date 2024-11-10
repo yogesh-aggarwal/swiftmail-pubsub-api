@@ -29,6 +29,12 @@ class MessageFlags(BaseModel):
     is_spam: bool = Field(..., alias="is_spam")
 
 
+class MessageReminders(BaseModel):
+    follow_up: list[str] = Field(..., alias="follow_up")
+    forgetting: list[str] = Field(..., alias="forgetting")
+    snoozed: list[str] = Field(..., alias="snoozed")
+
+
 class Message(BaseModel):
     id: str = Field(..., alias="id")
     user_id: str = Field(..., alias="user_id")
@@ -36,6 +42,7 @@ class Message(BaseModel):
     date_created: int = Field(..., alias="date_created")
 
     flags: MessageFlags = Field(..., alias="flags")
+    reminders: MessageReminders = Field(..., alias="reminders")
     email_data: MessageEmailData = Field(..., alias="email_data")
 
     summary: str = Field(..., alias="summary")
