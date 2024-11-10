@@ -41,7 +41,7 @@ class Message(BaseModel):
     summary: str = Field(..., alias="summary")
     template: str | None = Field(..., alias="template")
 
-    priorities: str = Field(..., alias="priorities")
+    priorities: list[str] = Field(..., alias="priorities")
     categories: list[str] = Field(..., alias="categories")
     labels: list[str] = Field(..., alias="labels")
     digests: list[str] = Field(..., alias="digests")
@@ -53,8 +53,36 @@ class Message(BaseModel):
             return Message(**message.to_dict())  # type:ignore
         return None
 
-    def create(self):
+    def save(self):
         MESSAGES_COLLECTION.document(self.id).set(self.model_dump())
 
+    def create(self):
+        self.save()
+
     def update_summary(self, summary: str):
-        MESSAGES_COLLECTION.document(self.id).update({"summary": summary})
+        self.summary = summary
+        self.save()
+
+    def mark_archived(self):
+        self.flags.is_archived = True
+        self.save()
+
+    def mark_unarchived(self):
+        self.flags.is_archived = False
+        self.save()
+
+    def update_priorities(self, priorities: list[str]):
+        self.priorities = priorities
+        self.save()
+
+    def update_categories(self, categories: list[str]):
+        self.categories = categories
+        self.save()
+
+    def update_labels(self, labels: list[str]):
+        self.labels = labels
+        self.save()
+
+    def update_digests(self, digests: list[str]):
+        self.digests = digests
+        self.save()
