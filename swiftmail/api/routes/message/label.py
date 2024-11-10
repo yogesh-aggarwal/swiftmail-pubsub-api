@@ -7,7 +7,7 @@ from swiftmail.api.models.user import User
 
 class RequestBody(BaseModel):
     message_id: str = Field(..., alias="message_id")
-    label_id: str = Field(..., alias="label_id")
+    label_ids: list[str] = Field(..., alias="label_ids")
 
 
 def label():
@@ -26,8 +26,9 @@ def label():
     if message.user_id != user.id:
         return jsonify({"message": "unauthorized"}), 403
 
-    # Step 3: TODO: perform action
+    # Step 3: Update message label_ids
     try:
+        message.update_labels(body.label_ids)
         return jsonify({"message": "success"}), 200
     except Exception as e:
         return jsonify({"message": "internal_server_error"}), 500
