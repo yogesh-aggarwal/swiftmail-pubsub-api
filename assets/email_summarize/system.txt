@@ -8,7 +8,7 @@ User will give you the email in the following json format:
 }
 ```
 
-and you have to output the summary of the email in the following json format:
+and you have to output the summary of the email in the following json format strictly: (don't say anything else)
 
 ```json
 {
