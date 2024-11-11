@@ -8,7 +8,12 @@ from swiftmail.api.models.dashboard import (
 )
 from swiftmail.api.models.data import Data, DataType
 from swiftmail.api.models.digest import Digest
-from swiftmail.api.models.message import Message, MessageEmailData, MessageFlags
+from swiftmail.api.models.message import (
+    Message,
+    MessageEmailData,
+    MessageFlags,
+    MessageReminders,
+)
 from swiftmail.api.models.notification import Notification, NotificationStatus
 from swiftmail.api.models.reminder import Reminder, ReminderState, ReminderType
 from swiftmail.api.models.thread import Thread, ThreadFlags
@@ -104,6 +109,7 @@ async def _setup_user(name: str, email: str, password: str):
             is_junk=False,
             is_spam=False,
         ),
+        reminders=MessageReminders(follow_up=[], forgetting=[], snoozed=[]),
         summary="Sample summary",
         template=None,
         priorities=["high"],
