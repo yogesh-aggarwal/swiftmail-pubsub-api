@@ -94,7 +94,7 @@ async def _setup_user(name: str, email: str, password: str):
         )
         thread.create()
 
-    for i in range(1, 11):
+    for i in range(1, 20):
         message = Message(
             id=f"message{i}",
             user_id=user.id,
@@ -111,23 +111,25 @@ async def _setup_user(name: str, email: str, password: str):
                 bcc_email="bcc@example.com",
             ),
             flags=MessageFlags(
-                is_archived=False,
-                is_starred=False,
-                is_trash=False,
-                is_draft=False,
-                is_sent=True,
-                is_received=True,
-                is_read=False,
-                is_unread=True,
-                is_deleted=False,
-                is_junk=False,
-                is_spam=False,
+                is_archived=random.choice([True, False]),
+                is_starred=random.choice([True, False]),
+                is_trash=random.choice([True, False]),
+                is_draft=random.choice([True, False]),
+                is_sent=random.choice([True, False]),
+                is_received=random.choice([True, False]),
+                is_read=random.choice([True, False]),
+                is_unread=random.choice([True, False]),
+                is_deleted=random.choice([True, False]),
+                is_junk=random.choice([True, False]),
+                is_spam=random.choice([True, False]),
             ),
             reminders=MessageReminders(follow_up=[], forgetting=[], snoozed=[]),
             summary="Sample summary",
             template=None,
             priorities=["high"],
-            categories=[f"category{i}"],
+            categories=[
+                random.choice(["Primary", "Social", "Promotions", "Updates", "Forums"])
+            ],
             labels=[f"label{i}"],
             digests=[f"digest{random.choice([1, 2, 3])}"],
         )
