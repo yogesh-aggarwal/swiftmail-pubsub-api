@@ -9,7 +9,7 @@ User will give you the data in the following json format:
 ```json
 {
     "digests": [{"id": "id of the digest", "title": "title of the digest", "description": "description of the digest"}],
-    "email": {"id": "id of the email", "subject": "subject of the email", "html_content": "the html content of the email"}
+    "email": {"subject": "subject of the email", "html_content": "the html content of the email"}
 }
 ```
 
@@ -19,8 +19,10 @@ Here are some rules for you:
 
 and you have to segregate the emails according to the above rules in the following json format strictly: (don't say anything else)
 
-```json
 {
     "digests": ["id of the digest"]
 }
-```
+
+Note:
+1. You must not return anything else other than a valid JSON.
+2. The response must start with "{" and end with "}".

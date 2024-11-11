@@ -38,9 +38,9 @@ Input:
 Output:
 {
   "spam": true/false,
-  "priority": "" or null,
-  "labels": [] or null,
-  "categories": [] or null,
+  "priority": "priority" or null,
+  "labels": [array of labels],
+  "categories": [array of categories],
   "unsubscribe_link": unsubscribe link string or null,
 }
 

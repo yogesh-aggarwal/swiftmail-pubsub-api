@@ -10,8 +10,10 @@ User will give you the email in the following json format:
 
 and you have to output the summary of the email in the following json format strictly: (don't say anything else)
 
-```json
 {
     "summary": "the summary of the email"
 }
-```
+
+Note:
+1. You must not return anything else other than a valid JSON.
+2. The response must start with "{" and end with "}".
