@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from rich import print
 
 from swiftmail.api.models.digest import Digest
+from swiftmail.api.models.data import Data, DataType
 from swiftmail.core.utils import generate_id
 from swiftmail.api.models.message import (
     Message,
@@ -155,8 +156,8 @@ def process_email(job_data_str: str):
     message = Message(
         id=generate_id(),
         user_id=job_data.user.id,
-        date_updated=int(time.time()),
-        date_created=int(time.time()),
+        date_updated=int(time.time() * 1000),
+        date_created=int(time.time() * 1000),
         flags=MessageFlags(
             is_archived=False,
             is_starred=False,
@@ -183,5 +184,19 @@ def process_email(job_data_str: str):
         labels=classification_result.labels,
         digests=digests_result.digests,
     )
-
     message.create()
+
+    data = Data(
+        id=generate_id(),
+        date_created=int(time.time() * 1000),
+        type=DataType.EMAIL_RECEIVED,
+        user_id=job_data.user.id,
+        data={
+            "priority": classification_result.priority,
+            "labels": classification_result.labels,
+            "categories": classification_result.categories,
+            "digests": digests_result.digests,
+            "summary_words": len(summary.summary.split()),
+        },
+    )
+    data.create()
