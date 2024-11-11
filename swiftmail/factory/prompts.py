@@ -30,7 +30,6 @@ class PromptFactory:
         user_digest_titles: list[str],
         user_digest_descriptions: list[str],
         # Emails
-        email_id: str,
         email_subject: str,
         email_content: str,
     ):
@@ -57,7 +56,6 @@ class PromptFactory:
                             for i in range(len(user_digest_ids))
                         ],
                         "emails": {
-                            "id": email_id,
                             "subject": email_subject,
                             "html_content": email_content,
                         },
