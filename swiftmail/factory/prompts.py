@@ -5,6 +5,24 @@ from swiftmail.services.llm import LLMMessage, LLMPrompt
 
 class PromptFactory:
     @staticmethod
+    def email_summarize(*, html_content: str):
+        with open("assets/email_summarize/system.txt") as f:
+            system_prompt = f.read()
+        with open("assets/email_summarize/user.txt") as f:
+            user_prompt = f.read().strip()
+            user_prompt = user_prompt.format(
+                input_json=json.dumps({"html_content": html_content})
+            )
+
+        return LLMPrompt(
+            "Email Summarize",
+            [
+                LLMMessage("system", system_prompt),
+                LLMMessage("user", user_prompt),
+            ],
+        )
+
+    @staticmethod
     def email_segregation(
         *,
         # User about
