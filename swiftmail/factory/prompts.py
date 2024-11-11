@@ -5,6 +5,33 @@ from swiftmail.services.llm import LLMMessage, LLMPrompt
 
 class PromptFactory:
     @staticmethod
+    def generate_template(
+        *, user_name: str, user_email: str, user_bio: str, template_description: str
+    ):
+        with open("assets/generate_template/system.txt") as f:
+            system_prompt = f.read()
+        with open("assets/generate_template/user.txt") as f:
+            user_prompt = f.read().strip()
+            user_prompt = user_prompt.format(
+                input_json=json.dumps(
+                    {
+                        "user_name": user_name,
+                        "user_email": user_email,
+                        "user_bio": user_bio,
+                        "template_description": template_description,
+                    }
+                ),
+            )
+
+        return LLMPrompt(
+            "Generate Template",
+            [
+                LLMMessage("system", system_prompt),
+                LLMMessage("user", user_prompt),
+            ],
+        )
+
+    @staticmethod
     def email_summarize(*, html_content: str):
         with open("assets/email_summarize/system.txt") as f:
             system_prompt = f.read()
