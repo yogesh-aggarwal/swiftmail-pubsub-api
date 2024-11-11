@@ -7,7 +7,6 @@ from swiftmail.core.firebase import DATA_COLLECTION
 
 
 class DataType(str, Enum):
-    DELIVERY_TIME = "delivery_time"
     EMAIL_RECEIVED = "email_received"
     EMAIL_SENT = "email_sent"
 
