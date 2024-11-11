@@ -9,10 +9,10 @@ The user wants you to generate an email template for him. You'll be given with t
     "template_description": "Description of the template",
 }
 
-And you have to write a very personalized email template for the user. The output should be stictly in the following format:
+And you have to write a very personalized email template for the user according to his bio so that he can use this template to send emails to others. Please note that you are writing this template to help the user not to the user. The output should be stictly in the following format:
 
 {
-    "html_Content": "HTML content of the email template",
+    "html_content": "Body content of the email template",
 }
 
 Note:
