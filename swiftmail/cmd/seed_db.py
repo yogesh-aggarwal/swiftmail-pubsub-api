@@ -1,4 +1,5 @@
 import asyncio
+import random
 from datetime import datetime
 
 from swiftmail.api.models.dashboard import (
@@ -29,35 +30,11 @@ async def _setup_user(name: str, email: str, password: str):
         password=password,
     )
 
-    # Create related data for the user
-    thread = Thread(
-        id="thread1",
-        user_id=user.id,
-        date_created=int(datetime.now().timestamp()),
-        date_updated=int(datetime.now().timestamp()),
-        title="Sample Thread",
-        description="This is a sample thread",
-        summary="Sample summary",
-        thread_id="thread1",
-        flags=ThreadFlags(
-            is_muted=False,
-            is_starred=False,
-            is_trash=False,
-            is_archived=False,
-            is_read=False,
-            is_unread=True,
-            is_deleted=False,
-            is_junk=False,
-            is_spam=False,
-        ),
-    )
-    thread.create()
-
     reminder = Reminder(
         id="reminder1",
         user_id=user.id,
-        date_created=int(datetime.now().timestamp()),
-        date_updated=int(datetime.now().timestamp()),
+        date_created=int(datetime.now().timestamp() * 1000),
+        date_updated=int(datetime.now().timestamp() * 1000),
         scheduled_at=int(datetime.now().timestamp() + 3600),  # 1 hour later
         time_zone="UTC",
         message_id="message1",
@@ -70,8 +47,8 @@ async def _setup_user(name: str, email: str, password: str):
     notification = Notification(
         id="notification1",
         user_id=user.id,
-        date_created=int(datetime.now().timestamp()),
-        date_updated=int(datetime.now().timestamp()),
+        date_created=int(datetime.now().timestamp() * 1000),
+        date_updated=int(datetime.now().timestamp() * 1000),
         date_delivered=None,
         date_dispatched=None,
         date_failed=None,
@@ -81,58 +58,85 @@ async def _setup_user(name: str, email: str, password: str):
     )
     notification.create()
 
-    message = Message(
-        id="message1",
-        user_id=user.id,
-        date_created=int(datetime.now().timestamp()),
-        date_updated=int(datetime.now().timestamp()),
-        email_data=MessageEmailData(
-            subject="Sample Subject",
-            html_content="<p>This is a sample email content</p>",
-            message_id="message1",
-            thread_id="thread1",
-            from_email="from@example.com",
-            to_email="to@example.com",
-            cc_email="cc@example.com",
-            bcc_email="bcc@example.com",
-        ),
-        flags=MessageFlags(
-            is_archived=False,
-            is_starred=False,
-            is_trash=False,
-            is_draft=False,
-            is_sent=True,
-            is_received=True,
-            is_read=False,
-            is_unread=True,
-            is_deleted=False,
-            is_junk=False,
-            is_spam=False,
-        ),
-        reminders=MessageReminders(follow_up=[], forgetting=[], snoozed=[]),
-        summary="Sample summary",
-        template=None,
-        priorities=["high"],
-        categories=["category1"],
-        labels=["label1"],
-        digests=["digest1"],
-    )
-    message.create()
+    for i in range(1, 4):
+        digest = Digest(
+            id=f"digest{i}",
+            user_id=user.id,
+            date_created=int(datetime.now().timestamp() * 1000),
+            date_updated=int(datetime.now().timestamp() * 1000),
+            title=["College placements", "Funding updates", "SaaS updates"][i - 1],
+            description="This is a sample digest",
+        )
+        digest.create()
 
-    digest = Digest(
-        id="digest1",
-        user_id=user.id,
-        date_created=int(datetime.now().timestamp()),
-        date_updated=int(datetime.now().timestamp()),
-        title="Sample Digest",
-        description="This is a sample digest",
-    )
-    digest.create()
+    # Create related data for the user
+    for i in range(1, 3):
+        thread = Thread(
+            id=f"thread{i}",
+            user_id=user.id,
+            date_created=int(datetime.now().timestamp() * 1000),
+            date_updated=int(datetime.now().timestamp() * 1000),
+            title=f"Sample Thread {i}",
+            description=f"This is a sample thread {i}",
+            summary="Sample summary",
+            thread_id=f"thread{i}",
+            flags=ThreadFlags(
+                is_muted=False,
+                is_starred=False,
+                is_trash=False,
+                is_archived=False,
+                is_read=False,
+                is_unread=True,
+                is_deleted=False,
+                is_junk=False,
+                is_spam=False,
+            ),
+        )
+        thread.create()
+
+    for i in range(1, 11):
+        message = Message(
+            id=f"message{i}",
+            user_id=user.id,
+            date_created=int(datetime.now().timestamp() * 1000),
+            date_updated=int(datetime.now().timestamp() * 1000),
+            email_data=MessageEmailData(
+                subject=f"Sample Subject {i}",
+                html_content="<p>This is a sample email content</p>",
+                message_id=f"message{i}",
+                thread_id=f"thread{(i % 2) + 1}",
+                from_email="from@example.com",
+                to_email="to@example.com",
+                cc_email="cc@example.com",
+                bcc_email="bcc@example.com",
+            ),
+            flags=MessageFlags(
+                is_archived=False,
+                is_starred=False,
+                is_trash=False,
+                is_draft=False,
+                is_sent=True,
+                is_received=True,
+                is_read=False,
+                is_unread=True,
+                is_deleted=False,
+                is_junk=False,
+                is_spam=False,
+            ),
+            reminders=MessageReminders(follow_up=[], forgetting=[], snoozed=[]),
+            summary="Sample summary",
+            template=None,
+            priorities=["high"],
+            categories=[f"category{i}"],
+            labels=[f"label{i}"],
+            digests=[f"digest{random.choice([1, 2, 3])}"],
+        )
+        message.create()
 
     data = Data(
         id="data1",
         user_id=user.id,
-        date_created=int(datetime.now().timestamp()),
+        date_created=int(datetime.now().timestamp() * 1000),
         type=DataType.EMAIL_RECEIVED,
         data={"key": "value"},
     )
@@ -140,20 +144,20 @@ async def _setup_user(name: str, email: str, password: str):
 
     dashboard_section = DashboardSection(
         id="section1",
-        date_updated=int(datetime.now().timestamp()),
+        date_updated=int(datetime.now().timestamp() * 1000),
         title="Sample Section",
         description="This is a sample section",
         status=DashboardSectionStatusEnum.READY,
-        time_range_start=int(datetime.now().timestamp()),
-        time_range_end=int(datetime.now().timestamp()),
+        time_range_start=int(datetime.now().timestamp() * 1000),
+        time_range_end=int(datetime.now().timestamp() * 1000),
         data={"key": "value"},
     )
 
     dashboard = Dashboard(
         id="dashboard1",
         user_id=user.id,
-        date_created=int(datetime.now().timestamp()),
-        date_updated=int(datetime.now().timestamp()),
+        date_created=int(datetime.now().timestamp() * 1000),
+        date_updated=int(datetime.now().timestamp() * 1000),
         sections={"section1": dashboard_section},
     )
     dashboard.create()
