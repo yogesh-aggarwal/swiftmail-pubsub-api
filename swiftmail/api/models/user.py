@@ -91,11 +91,25 @@ class User(BaseModel):
                         self_description="",
                     ),
                     inbox=UserInboxPreferences(
-                        priorities=[],
+                        priorities=[
+                            "Low",
+                            "Medium",
+                            "High",
+                        ],
                         priority_rules=[],
-                        labels=[],
+                        labels=[
+                            "Personal",
+                            "Work",
+                            "Shopping",
+                        ],
                         label_rules=[],
-                        categories=[],
+                        categories=[
+                            "Primary",
+                            "Social",
+                            "Promotions",
+                            "Updates",
+                            "Forums",
+                        ],
                         category_rules=[],
                         spam_words=[],
                         spam_rules=[],
