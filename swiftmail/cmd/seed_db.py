@@ -58,6 +58,15 @@ async def _setup_user(name: str, email: str, password: str):
     )
     notification.create()
 
+    digest = Digest(
+        id=f"digest0",
+        user_id=user.id,
+        date_created=int(datetime.now().timestamp() * 1000),
+        date_updated=int(datetime.now().timestamp() * 1000),
+        title="Test emails",
+        description="This digest contains test emails from any source",
+    )
+    digest.create()
     for i in range(1, 4):
         digest = Digest(
             id=f"digest{i}",
