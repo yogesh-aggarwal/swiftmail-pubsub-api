@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -18,7 +18,7 @@ class Data(BaseModel):
     user_id: str = Field(..., alias="user_id")
 
     type: DataType = Field(..., alias="type")
-    data: Dict = Field(..., alias="data")
+    data: dict[str, Any] = Field(..., alias="data")
 
     def create(self):
         DATA_COLLECTION.document(self.id).set(self.model_dump())
