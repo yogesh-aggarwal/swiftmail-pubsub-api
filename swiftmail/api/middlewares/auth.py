@@ -1,6 +1,8 @@
 from functools import wraps
 
-from flask import jsonify, request
+from flask import jsonify, request, g
+from flask_socketio import disconnect, emit
+from urllib.parse import parse_qs
 
 from swiftmail.api.models.user import User
 from swiftmail.core.firebase import auth
@@ -18,10 +20,20 @@ def _handle_preflight():
 
 
 def _extract_firebase_token():
+    # For WebSocket connections, check URL parameters
+    if hasattr(request, "environ") and "wsgi.url_scheme" in request.environ:
+        query_string = request.environ.get("QUERY_STRING", "")
+        params = parse_qs(query_string)
+        token = params.get("token", [None])[0]
+        if token:
+            return token
+
+    # For regular HTTP requests, check Authorization header
     firebase_auth_token = request.headers.get("Authorization")
-    if not firebase_auth_token:
-        return None
-    return firebase_auth_token.replace("Bearer ", "")
+    if firebase_auth_token:
+        return firebase_auth_token.replace("Bearer ", "")
+
+    return None
 
 
 def _fetch_user_from_firebase_token(firebase_auth_token) -> User | None:
@@ -37,21 +49,28 @@ def _fetch_user_from_firebase_token(firebase_auth_token) -> User | None:
     return None
 
 
-def firebase_auth_middleware():
-    if request.method == "OPTIONS":
-        return _handle_preflight()
-
+def get_user_from_request() -> User | None:
     firebase_auth_token = _extract_firebase_token()
     if not firebase_auth_token:
-        return jsonify({"message": "unauthorized"}), 401
+        return None
 
     user = _fetch_user_from_firebase_token(firebase_auth_token)
     if not user:
-        return jsonify({"message": "unauthorized"}), 401
+        return None
 
     setattr(request, "user", user)
 
     return None
+
+
+def firebase_auth_middleware():
+    if request.method == "OPTIONS":
+        return _handle_preflight()
+
+    user = get_user_from_request()
+    if not user:
+        return jsonify({"message": "unauthorized"}), 401
+    return user
 
 
 def firebase_auth_middleware_wrapped(func):

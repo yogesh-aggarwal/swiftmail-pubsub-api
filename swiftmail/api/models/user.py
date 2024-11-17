@@ -64,13 +64,11 @@ class User(BaseModel):
 
     @staticmethod
     def get_from_email(email: str):
-        user = USERS_COLLECTION.where(filter=FieldFilter("email", "==", email)).get()
-        if not user:
-            raise ValueError(f"User with email {email} not found")
-        user = user[0].to_dict()
-
         try:
-            return User.model_validate(user)
+            print("email", email)
+            user = USERS_COLLECTION.document(email).get()
+            print("user", user)
+            return User.model_validate(user.to_dict())
         except Exception as e:
             print(e)
             return None
