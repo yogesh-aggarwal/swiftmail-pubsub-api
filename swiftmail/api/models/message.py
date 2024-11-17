@@ -38,6 +38,10 @@ class Message(BaseModel):
     labels: list[str] = Field(..., alias="labels")
     digests: list[str] = Field(..., alias="digests")
 
+    embedding: list[float] = Field(..., alias="embedding")
+    keywords: list[str] = Field(..., alias="keywords")
+    unsubscribe_link: str | None = Field(None, alias="unsubscribe_link")
+
     @staticmethod
     def get_by_id(message_id: str) -> "Message | None":
         message = MESSAGES_COLLECTION.document(message_id).get()
@@ -69,4 +73,16 @@ class Message(BaseModel):
 
     def update_digests(self, digests: list[str]):
         self.digests = digests
+        self.save()
+
+    def update_embedding(self, embedding: list[float]):
+        self.embedding = embedding
+        self.save()
+
+    def update_keywords(self, keywords: list[str]):
+        self.keywords = keywords
+        self.save()
+
+    def update_unsubscribe_link(self, unsubscribe_link: str | None):
+        self.unsubscribe_link = unsubscribe_link
         self.save()

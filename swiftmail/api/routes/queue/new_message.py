@@ -1,7 +1,7 @@
 from flask import request
 
 from swiftmail.api.models.message import MessageEmailData
-from swiftmail.jobs.process_email import ProcessEmailJobData, process_email
+from swiftmail.jobs.email import ProcessEmailJobData, process_email
 
 
 def new_message():
