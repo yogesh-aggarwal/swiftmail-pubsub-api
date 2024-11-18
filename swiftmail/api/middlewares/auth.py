@@ -55,12 +55,7 @@ def get_user_from_request() -> User | None:
         return None
 
     user = _fetch_user_from_firebase_token(firebase_auth_token)
-    if not user:
-        return None
-
-    setattr(request, "user", user)
-
-    return None
+    return user
 
 
 def firebase_auth_middleware():
@@ -70,6 +65,9 @@ def firebase_auth_middleware():
     user = get_user_from_request()
     if not user:
         return jsonify({"message": "unauthorized"}), 401
+
+    setattr(request, "user", user)
+
     return user
 
 
