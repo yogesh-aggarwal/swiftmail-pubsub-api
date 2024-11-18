@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from swiftmail.api.models.data import Data, DataType
 from swiftmail.api.models.message import Message, MessageReminders
-from swiftmail.core.utils import generate_id
+from swiftmail.core.utils import generate_id, with_retry
 
 from .models import ProcessEmailJobData
 from .processors import (
@@ -14,6 +14,7 @@ from .processors import (
 )
 
 
+@with_retry(3)
 def process_email(job_data_str: str):
     """Main email processing function"""
     job_data = ProcessEmailJobData.model_validate_json(job_data_str)
@@ -39,7 +40,7 @@ def process_email(job_data_str: str):
 
     # Store results
     message = Message(
-        id=generate_id(),
+        _id=generate_id(),
         user_id=job_data.user.id,
         date_updated=int(time.time() * 1000),
         date_created=int(time.time() * 1000),
@@ -61,7 +62,7 @@ def process_email(job_data_str: str):
     message.create()
 
     data = Data(
-        id=generate_id(),
+        _id=generate_id(),
         date_created=int(time.time() * 1000),
         type=DataType.EMAIL_RECEIVED,
         user_id=job_data.user.id,
