@@ -1,9 +1,9 @@
 import time
 from enum import Enum
-
-from pydantic import BaseModel, Field
-
-from swiftmail.core.firebase import NOTIFICATIONS_COLLECTION
+from typing import Optional
+from swiftmail.core.mongodb import notifications
+from .base import MongoModel
+from pydantic import Field
 
 
 class NotificationStatus(str, Enum):
@@ -15,31 +15,26 @@ class NotificationStatus(str, Enum):
     DISMISSED = "dismissed"
 
 
-class Notification(BaseModel):
-    id: str = Field(..., alias="id")
+class Notification(MongoModel):
     user_id: str = Field(..., alias="user_id")
     date_created: int = Field(..., alias="date_created")
     date_updated: int = Field(..., alias="date_updated")
-
     title: str = Field(..., alias="title")
     body: str = Field(..., alias="body")
     status: NotificationStatus = Field(..., alias="status")
-
-    date_dispatched: int | None = Field(None, alias="date_dispatched")
-    date_delivered: int | None = Field(None, alias="date_delivered")
-    date_failed: int | None = Field(None, alias="date_failed")
+    date_dispatched: Optional[int] = Field(None, alias="date_dispatched")
+    date_delivered: Optional[int] = Field(None, alias="date_delivered")
+    date_failed: Optional[int] = Field(None, alias="date_failed")
 
     @staticmethod
-    def get_by_id(id: str) -> "Notification | None":
-        doc = NOTIFICATIONS_COLLECTION.document(id).get()
-        if doc.exists:
-            return Notification(**doc.to_dict())  # type:ignore
-        return None
+    def get_by_id(notification_id: str) -> Optional["Notification"]:
+        notification = notifications.find_one({"_id": notification_id})
+        return Notification.from_mongo(notification) if notification else None
 
     def create(self):
-        NOTIFICATIONS_COLLECTION.document(self.id).set(self.model_dump())
+        self.save(notifications)
 
     def update_status(self, status: NotificationStatus):
         self.status = status
         self.date_updated = int(time.time())
-        NOTIFICATIONS_COLLECTION.document(self.id).update(self.model_dump())
+        self.save(notifications)
