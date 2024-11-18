@@ -43,7 +43,7 @@ class Thread(MongoModel):
         """
         thread_doc = THREADS.find_one({"_id": thread_id})
         if thread_doc:
-            return Thread(**thread_doc)
+            return Thread.from_mongo(**thread_doc)
         return None
 
     @staticmethod
@@ -68,7 +68,14 @@ class Thread(MongoModel):
             .skip(skip)
             .limit(page_size)
         )
-        return [Message(**msg) for msg in messages]
+
+        results = []
+        for msg in messages:
+            result = Message.from_mongo(**msg)
+            if result:
+                results.append(result)
+
+        return results
 
     def save(self):
         self._save(THREADS)

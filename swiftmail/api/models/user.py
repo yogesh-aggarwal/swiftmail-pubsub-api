@@ -67,7 +67,7 @@ class User(MongoModel):
             user_doc = USERS.find_one({"email": email})
             return User.from_mongo(user_doc) if user_doc else None
         except Exception as e:
-            print(e)
+            print("Error fetching user from email", e)
             return None
 
     @staticmethod

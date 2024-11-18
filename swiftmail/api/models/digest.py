@@ -23,18 +23,23 @@ class Digest(MongoModel):
 
         docs = []
         for doc in cursor:
-            docs.append(Digest.from_mongo(doc))
+            result = Digest.from_mongo(doc)
+            if result:
+                docs.append(result)
         return docs
 
-    def create(self):
+    def save(self):
         self._save(DIGESTS)
+
+    def create(self):
+        self.save()
 
     def update_title(self, title: str):
         self.title = title
         self.date_updated = int(time.time())
-        self._save(DIGESTS)
+        self.save()
 
     def update_description(self, description: str):
         self.description = description
         self.date_updated = int(time.time())
-        self._save(DIGESTS)
+        self.save()
