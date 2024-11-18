@@ -64,13 +64,13 @@ class ClassificationProcessor(EmailProcessor):
 
 class DigestProcessor(EmailProcessor):
     def process(self) -> EmailDigestResult:
-        digests = Digest.get_by_user_id(self.job_data.user._id)
+        digests = Digest.get_by_user_id(self.job_data.user.id)
         llm_model = get_llm_from_string(self.user_prefs.ai.model)
 
         llm_prompt = PromptFactory.email_digest_segregate(
             email_subject=self.job_data.email.subject,
             email_content=self.job_data.email.html_content,
-            user_digest_ids=[d._id for d in digests],
+            user_digest_ids=[d.id for d in digests],
             user_digest_titles=[d.title for d in digests],
             user_digest_descriptions=[d.description for d in digests],
         )
