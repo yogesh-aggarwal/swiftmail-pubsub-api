@@ -39,8 +39,8 @@ def process_email(job_data_str: str):
 
     # Store results
     message = Message(
-        id=generate_id(),
-        user_id=job_data.user.id,
+        _id=generate_id(),
+        user_id=job_data.user._id,
         date_updated=int(time.time() * 1000),
         date_created=int(time.time() * 1000),
         reminders=MessageReminders(
@@ -64,7 +64,7 @@ def process_email(job_data_str: str):
         id=generate_id(),
         date_created=int(time.time() * 1000),
         type=DataType.EMAIL_RECEIVED,
-        user_id=job_data.user.id,
+        user_id=job_data.user._id,
         data={
             "priority": classification_result.priority,
             "labels": classification_result.labels,
