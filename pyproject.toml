@@ -27,6 +27,7 @@ setuptools = "^75.1.0"
 rich = "^13.9.2"
 flask-socketio = "^5.4.1"
 rq = "^2.0.0"
+pymongo = "^4.6.2"
 
 [tool.poetry.scripts]
 seed_db = "swiftmail.cmd.seed_db:main"
