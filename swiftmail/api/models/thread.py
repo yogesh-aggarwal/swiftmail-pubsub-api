@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
 
-from swiftmail.core.firebase import THREADS_COLLECTION, MESSAGES_COLLECTION
+from .base import MongoModel
+
+from swiftmail.core.mongodb import THREADS, MESSAGES
 from swiftmail.api.models.message import Message
 
 
@@ -15,8 +17,7 @@ class ThreadFlags(BaseModel):
     is_sent: bool = Field(..., alias="is_sent")
 
 
-class Thread(BaseModel):
-    id: str = Field(..., alias="id")
+class Thread(MongoModel):
     user_id: str = Field(..., alias="user_id")
     date_updated: int = Field(..., alias="date_updated")
     date_created: int = Field(..., alias="date_created")
@@ -40,9 +41,9 @@ class Thread(BaseModel):
         Returns:
             Thread | None: The Thread instance if found, else None.
         """
-        thread_doc = THREADS_COLLECTION.document(thread_id).get()
-        if thread_doc.exists:
-            return Thread(**thread_doc.to_dict())  # type:ignore
+        thread_doc = THREADS.find_one({"_id": thread_id})
+        if thread_doc:
+            return Thread(**thread_doc)
         return None
 
     @staticmethod
@@ -60,21 +61,21 @@ class Thread(BaseModel):
         Returns:
             list[Message]: A list of Message instances.
         """
-        messages_query = (
-            MESSAGES_COLLECTION.where("thread_id", "==", thread_id)
-            .order_by("date_created")
+        skip = (page - 1) * page_size
+        messages = (
+            MESSAGES.find({"thread_id": thread_id})
+            .sort("date_created", 1)
+            .skip(skip)
             .limit(page_size)
-            .offset((page - 1) * page_size)
         )
-        messages = messages_query.stream()
-        return [Message(**msg.to_dict()) for msg in messages]
-
-    def create(self):
-        THREADS_COLLECTION.document(self.id).set(self.model_dump())
+        return [Message(**msg) for msg in messages]
 
     def save(self):
-        """Save the thread to the database"""
-        THREADS_COLLECTION.document(self.id).set(self.model_dump())
+        self._save(THREADS)
+
+    def create(self):
+        """Create a new thread in the database"""
+        self.save()
 
     def mark_as_read(self):
         """Mark the thread as read and save"""

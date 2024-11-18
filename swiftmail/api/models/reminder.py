@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Optional
-from swiftmail.core.mongodb import reminders
+from swiftmail.core.mongodb import REMINDERS
 from .base import MongoModel
 from pydantic import Field
 
@@ -33,24 +33,24 @@ class Reminder(MongoModel):
 
     @staticmethod
     def get_by_id(reminder_id: str) -> Optional["Reminder"]:
-        reminder = reminders.find_one({"_id": reminder_id})
+        reminder = REMINDERS.find_one({"_id": reminder_id})
         return Reminder.from_mongo(reminder) if reminder else None
 
     def create(self):
-        self.save(reminders)
+        self._save(REMINDERS)
 
     def update_type(self, type: ReminderType):
         self.type = type
-        self.save(reminders)
+        self._save(REMINDERS)
 
     def update_state(self, state: ReminderState):
         self.state = state
-        self.save(reminders)
+        self._save(REMINDERS)
 
     def update_scheduled_at(self, scheduled_at: int):
         self.scheduled_at = scheduled_at
-        self.save(reminders)
+        self._save(REMINDERS)
 
     def update_time_zone(self, time_zone: str):
         self.time_zone = time_zone
-        self.save(reminders)
+        self._save(REMINDERS)

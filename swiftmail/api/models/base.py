@@ -1,7 +1,7 @@
-from datetime import datetime
 from swiftmail.core.utils import generate_id
 from typing import Any, Dict, TypeVar, Optional
 
+from pymongo.collection import Collection
 from pydantic import BaseModel, Field
 
 T = TypeVar("T", bound="MongoModel")
@@ -10,7 +10,7 @@ T = TypeVar("T", bound="MongoModel")
 class MongoModel(BaseModel):
     """Base model for MongoDB documents"""
 
-    _id: str = Field(default_factory=lambda: generate_id(), alias="_id")
+    id: str = Field(default_factory=lambda: generate_id(), alias="_id")
 
     def model_dump(self, *args, **kwargs) -> Dict[str, Any]:
         """Convert to dict, using _id for MongoDB"""
@@ -24,8 +24,8 @@ class MongoModel(BaseModel):
             return None
         return cls.model_validate(data)
 
-    def save(self, collection):
+    def _save(self, collection: Collection):
         """Generic save method for MongoDB"""
         collection.update_one(
-            {"_id": self._id}, {"$set": self.model_dump()}, upsert=True
+            {"_id": self.id}, {"$set": self.model_dump()}, upsert=True
         )

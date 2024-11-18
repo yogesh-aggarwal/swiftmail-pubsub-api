@@ -1,5 +1,5 @@
 from typing import Optional, List
-from swiftmail.core.mongodb import messages
+from swiftmail.core.mongodb import MESSAGES
 from .base import MongoModel
 
 from pydantic import BaseModel, Field
@@ -45,43 +45,43 @@ class Message(MongoModel):
 
     @staticmethod
     def get_by_id(message_id: str) -> Optional["Message"]:
-        message = messages.find_one({"_id": message_id})
+        message = MESSAGES.find_one({"_id": message_id})
         return Message.from_mongo(message) if message else None
 
-    def save(self):
-        messages.update_one({"_id": self._id}, {"$set": self.model_dump()}, upsert=True)
+    def _save(self):
+        MESSAGES.update_one({"_id": self.id}, {"$set": self.model_dump()}, upsert=True)
 
     def create(self):
-        self.save()
+        self._save()
 
     def update_summary(self, summary: str):
         self.summary = summary
-        self.save()
+        self._save()
 
     def update_priorities(self, priorities: list[str]):
         self.priorities = priorities
-        self.save()
+        self._save()
 
     def update_categories(self, categories: list[str]):
         self.categories = categories
-        self.save()
+        self._save()
 
     def update_labels(self, labels: list[str]):
         self.labels = labels
-        self.save()
+        self._save()
 
     def update_digests(self, digests: list[str]):
         self.digests = digests
-        self.save()
+        self._save()
 
     def update_embedding(self, embedding: list[float]):
         self.embedding = embedding
-        self.save()
+        self._save()
 
     def update_keywords(self, keywords: list[str]):
         self.keywords = keywords
-        self.save()
+        self._save()
 
     def update_unsubscribe_link(self, unsubscribe_link: str | None):
         self.unsubscribe_link = unsubscribe_link
-        self.save()
+        self._save()

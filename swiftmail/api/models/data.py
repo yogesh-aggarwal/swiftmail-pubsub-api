@@ -1,9 +1,11 @@
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
-from swiftmail.core.firebase import DATA_COLLECTION
+from .base import MongoModel
+
+from swiftmail.core.mongodb import DATA
 
 
 class DataType(str, Enum):
@@ -11,8 +13,7 @@ class DataType(str, Enum):
     EMAIL_SENT = "email_sent"
 
 
-class Data(BaseModel):
-    id: str = Field(..., alias="id")
+class Data(MongoModel):
     date_created: int = Field(..., alias="date_created")
     user_id: str = Field(..., alias="user_id")
 
@@ -20,4 +21,4 @@ class Data(BaseModel):
     data: dict[str, Any] = Field(..., alias="data")
 
     def create(self):
-        DATA_COLLECTION.document(self.id).set(self.model_dump())
+        self._save(DATA)

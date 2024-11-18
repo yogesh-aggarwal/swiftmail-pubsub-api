@@ -1,7 +1,7 @@
 import time
 from enum import Enum
 from typing import Optional
-from swiftmail.core.mongodb import notifications
+from swiftmail.core.mongodb import NOTIFICATIONS
 from .base import MongoModel
 from pydantic import Field
 
@@ -28,13 +28,13 @@ class Notification(MongoModel):
 
     @staticmethod
     def get_by_id(notification_id: str) -> Optional["Notification"]:
-        notification = notifications.find_one({"_id": notification_id})
+        notification = NOTIFICATIONS.find_one({"_id": notification_id})
         return Notification.from_mongo(notification) if notification else None
 
     def create(self):
-        self.save(notifications)
+        self._save(NOTIFICATIONS)
 
     def update_status(self, status: NotificationStatus):
         self.status = status
         self.date_updated = int(time.time())
-        self.save(notifications)
+        self._save(NOTIFICATIONS)

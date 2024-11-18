@@ -1,5 +1,5 @@
 from typing import Optional
-from swiftmail.core.mongodb import users
+from swiftmail.core.mongodb import USERS
 from .base import MongoModel
 
 from pydantic import BaseModel, Field
@@ -64,7 +64,7 @@ class User(MongoModel):
     @staticmethod
     def get_from_email(email: str) -> Optional["User"]:
         try:
-            user_doc = users.find_one({"email": email})
+            user_doc = USERS.find_one({"email": email})
             return User.from_mongo(user_doc) if user_doc else None
         except Exception as e:
             print(e)
@@ -108,9 +108,9 @@ class User(MongoModel):
             credentials=UserCredentials(google_oauth=None),
         )
 
-        users.insert_one(user.model_dump())
+        USERS.insert_one(user.model_dump())
         return user
 
     def update_creds_google_oauth(self, creds: Optional[UserOAuthCredentials]):
         self.credentials.google_oauth = creds
-        users.update_one({"_id": self._id}, {"$set": self.model_dump()})
+        USERS.update_one({"_id": self.id}, {"$set": self.model_dump()})
