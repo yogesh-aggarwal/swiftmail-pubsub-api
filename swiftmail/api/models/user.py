@@ -141,4 +141,4 @@ class User(MongoModel):
 
     def update_creds_google_oauth(self, creds: Optional[UserOAuthCredentials]):
         self.credentials.google_oauth = creds
-        USERS.update_one({"_id": self.id}, {"$set": self.model_dump()})
+        USERS.update_one({"id": self.id}, {"$set": self.model_dump()})

@@ -14,7 +14,7 @@ class Digest(MongoModel):
 
     @staticmethod
     def get_by_id(digest_id: str) -> Optional["Digest"]:
-        digest = DIGESTS.find_one({"_id": digest_id})
+        digest = DIGESTS.find_one({"id": digest_id})
         return Digest.from_mongo(digest) if digest else None
 
     @staticmethod

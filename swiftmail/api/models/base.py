@@ -1,7 +1,7 @@
 from typing import Any, Dict, TypeVar, Optional
-from bson import ObjectId
 from pymongo.collection import Collection
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
+from swiftmail.core.utils import generate_id
 
 T = TypeVar("T", bound="MongoModel")
 
@@ -9,10 +9,9 @@ T = TypeVar("T", bound="MongoModel")
 class MongoModel(BaseModel):
     """Base model for MongoDB documents"""
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict()
 
-    id: ObjectId = Field(default_factory=lambda: ObjectId(), alias="_id")
+    id: str = Field(default_factory=generate_id, alias="id")
 
     def model_dump(self, *args, **kwargs) -> Dict[str, Any]:
         """Convert to dict, using _id for MongoDB"""
@@ -25,14 +24,8 @@ class MongoModel(BaseModel):
         if not data:
             return None
 
-        # Convert ObjectId to string if present
-        if "_id" in data and isinstance(data["_id"], ObjectId):
-            data["_id"] = str(data["_id"])
-
         return cls.model_validate(data)
 
     def _save(self, collection: Collection):
         """Generic save method for MongoDB"""
-        collection.update_one(
-            {"_id": self.id}, {"$set": self.model_dump()}, upsert=True
-        )
+        collection.update_one({"id": self.id}, {"$set": self.model_dump()}, upsert=True)

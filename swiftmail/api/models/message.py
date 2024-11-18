@@ -39,11 +39,11 @@ class Message(MongoModel):
 
     @staticmethod
     def get_by_id(message_id: str) -> Optional["Message"]:
-        message = MESSAGES.find_one({"_id": message_id})
+        message = MESSAGES.find_one({"id": message_id})
         return Message.from_mongo(message) if message else None
 
     def _save(self):
-        MESSAGES.update_one({"_id": self.id}, {"$set": self.model_dump()}, upsert=True)
+        MESSAGES.update_one({"id": self.id}, {"$set": self.model_dump()}, upsert=True)
 
     def create(self):
         self._save()

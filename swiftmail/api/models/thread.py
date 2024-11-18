@@ -47,7 +47,7 @@ class Thread(MongoModel):
         Returns:
             Thread | None: The Thread instance if found, else None.
         """
-        thread_doc = THREADS.find_one({"_id": thread_id})
+        thread_doc = THREADS.find_one({"id": thread_id})
         if thread_doc:
             return Thread.from_mongo(thread_doc)
         return None

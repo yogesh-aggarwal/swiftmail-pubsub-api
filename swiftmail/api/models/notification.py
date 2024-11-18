@@ -28,7 +28,7 @@ class Notification(MongoModel):
 
     @staticmethod
     def get_by_id(notification_id: str) -> Optional["Notification"]:
-        notification = NOTIFICATIONS.find_one({"_id": notification_id})
+        notification = NOTIFICATIONS.find_one({"id": notification_id})
         return Notification.from_mongo(notification) if notification else None
 
     def create(self):

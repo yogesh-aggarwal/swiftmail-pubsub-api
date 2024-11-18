@@ -2,7 +2,6 @@ import asyncio
 import random
 import time
 from datetime import datetime
-from bson import ObjectId
 
 from swiftmail.api.models.data import Data, DataType
 from swiftmail.api.models.digest import Digest
@@ -12,11 +11,11 @@ from swiftmail.api.models.reminder import Reminder, ReminderState, ReminderType
 from swiftmail.api.models.thread import Thread, ThreadFlags
 from swiftmail.api.models.user import User
 from swiftmail.core.mongodb import db
+from swiftmail.core.utils import generate_id
 
 
 async def create_reminder(user_id: str, message_id: str, thread_id: str) -> None:
     reminder = Reminder(
-        _id=ObjectId(),
         user_id=user_id,
         date_created=int(datetime.now().timestamp() * 1000),
         date_updated=int(datetime.now().timestamp() * 1000),
@@ -32,7 +31,6 @@ async def create_reminder(user_id: str, message_id: str, thread_id: str) -> None
 
 async def create_notification(user_id: str) -> None:
     notification = Notification(
-        _id=ObjectId(),
         user_id=user_id,
         date_created=int(datetime.now().timestamp() * 1000),
         date_updated=int(datetime.now().timestamp() * 1000),
@@ -51,34 +49,32 @@ async def create_digests(user_id: str) -> list[str]:
 
     # Create main digest
     digest = Digest(
-        _id=ObjectId(),
         user_id=user_id,
         date_created=int(datetime.now().timestamp() * 1000),
         date_updated=int(datetime.now().timestamp() * 1000),
         title="Test emails",
         description="This digest contains test emails from any source",
     )
+    digest_ids.append(digest.id)
     digest.create()
 
     # Create additional digests
     titles = ["College placements", "Funding updates", "SaaS updates"]
     for title in titles:
-        digest_id = ObjectId()
-        digest_ids.append(digest_id)
         digest = Digest(
-            _id=digest_id,
             user_id=user_id,
             date_created=int(datetime.now().timestamp() * 1000),
             date_updated=int(datetime.now().timestamp() * 1000),
             title=title,
             description="This is a sample digest",
         )
+        digest_ids.append(digest.id)
         digest.create()
 
     return digest_ids
 
 
-async def create_threads(user_id: str) -> list[str]:
+async def create_threads(user_id: str, digest_ids: list[str]) -> list[str]:
     thread_ids = []
     for i in range(1, 20):
         thread = Thread(
@@ -88,13 +84,13 @@ async def create_threads(user_id: str) -> list[str]:
             title=f"Sample Thread {i}",
             description=f"This is a sample thread {i}",
             summary="Sample summary",
-            thread_id=str(ObjectId()),
+            thread_id=generate_id(),
             priority=random.choice(["low", "medium", "high"]),
             categories=[
                 random.choice(["Primary", "Social", "Promotions", "Updates", "Forums"])
             ],
             labels=[],
-            digests=[],
+            digests=[random.choice(digest_ids)],
             flags=ThreadFlags(
                 is_muted=random.choice([True, False]),
                 is_starred=random.choice([True, False]),
@@ -105,25 +101,22 @@ async def create_threads(user_id: str) -> list[str]:
                 is_spam=random.choice([True, False]),
             ),
         )
-        thread_ids.append(str(thread.id))
+        thread_ids.append(thread.id)
         thread.create()
     return thread_ids
 
 
-async def create_messages(
-    user_id: str, thread_ids: list[str], digest_ids: list[str]
-) -> None:
+async def create_messages(user_id: str, thread_ids: list[str]) -> None:
     for i in range(1, 20):
-        message_id = ObjectId()
+        message_id = generate_id()
         message = Message(
-            _id=message_id,
             user_id=user_id,
             date_created=int(datetime.now().timestamp() * 1000),
             date_updated=int(datetime.now().timestamp() * 1000),
             email_data=MessageEmailData(
                 subject=f"Sample Subject {i}",
                 html_content="<p>This is a sample email content</p>",
-                message_id=str(message_id),
+                message_id=message_id,
                 thread_id=random.choice(thread_ids),
                 from_email="from@example.com",
                 to_email="to@example.com",
@@ -142,20 +135,9 @@ async def create_messages(
         )
         message.create()
 
-        thread = Thread.get_by_id(thread_ids[(i % 2) + 1])
-        if thread:
-            thread.priority = "high"
-            thread.categories = [
-                random.choice(["Primary", "Social", "Promotions", "Updates", "Forums"])
-            ]
-            thread.labels = [f"label{i}"]
-            thread.digests = [random.choice(digest_ids)]
-            thread.save()
-
 
 async def create_data(user_id: str) -> None:
     data = Data(
-        _id=ObjectId(),
         user_id=user_id,
         date_created=int(datetime.now().timestamp() * 1000),
         type=DataType.EMAIL_RECEIVED,
@@ -180,20 +162,20 @@ async def setup_user(name: str, email: str):
 
     # Create digests and threads
     digest_start = time.time()
-    digest_ids = await create_digests(str(user.id))
+    digest_ids = await create_digests(user.id)
     print(f"✓ Created digests in {time.time() - digest_start:.2f}s")
 
     thread_start = time.time()
-    thread_ids = await create_threads(str(user.id))
+    thread_ids = await create_threads(user.id, digest_ids)
     print(f"✓ Created threads in {time.time() - thread_start:.2f}s")
 
     # Create remaining entities in parallel
     parallel_start = time.time()
     await asyncio.gather(
-        # create_reminder(str(user.id), str(message_id), str(thread_id)),
-        create_notification(str(user.id)),
-        create_messages(str(user.id), thread_ids, digest_ids),
-        create_data(str(user.id)),
+        # create_reminder(user.id, message_id),thread_id)),
+        create_notification(user.id),
+        create_messages(user.id, thread_ids),
+        create_data(user.id),
     )
     print(f"✓ Created remaining entities in {time.time() - parallel_start:.2f}s")
 

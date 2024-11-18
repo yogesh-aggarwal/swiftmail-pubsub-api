@@ -1,4 +1,5 @@
 from enum import Enum
+from swiftmail.core.utils import generate_id
 from typing import Optional
 from swiftmail.core.mongodb import REMINDERS
 from .base import MongoModel
@@ -33,7 +34,7 @@ class Reminder(MongoModel):
 
     @staticmethod
     def get_by_id(reminder_id: str) -> Optional["Reminder"]:
-        reminder = REMINDERS.find_one({"_id": reminder_id})
+        reminder = REMINDERS.find_one({"id": reminder_id})
         return Reminder.from_mongo(reminder) if reminder else None
 
     def create(self):
