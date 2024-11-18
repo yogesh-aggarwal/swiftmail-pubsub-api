@@ -3,11 +3,6 @@ import random
 import time
 from datetime import datetime
 
-from swiftmail.api.models.dashboard import (
-    Dashboard,
-    DashboardSection,
-    DashboardSectionStatusEnum,
-)
 from swiftmail.api.models.data import Data, DataType
 from swiftmail.api.models.digest import Digest
 from swiftmail.api.models.message import Message, MessageEmailData, MessageReminders
@@ -28,7 +23,7 @@ async def _setup_user(name: str, email: str):
     )
 
     reminder = Reminder(
-        id="reminder1",
+        _id="reminder1",
         user_id=user.id,
         date_created=int(datetime.now().timestamp() * 1000),
         date_updated=int(datetime.now().timestamp() * 1000),
@@ -42,7 +37,7 @@ async def _setup_user(name: str, email: str):
     reminder.create()
 
     notification = Notification(
-        id="notification1",
+        _id="notification1",
         user_id=user.id,
         date_created=int(datetime.now().timestamp() * 1000),
         date_updated=int(datetime.now().timestamp() * 1000),
@@ -56,7 +51,7 @@ async def _setup_user(name: str, email: str):
     notification.create()
 
     digest = Digest(
-        id=f"digest0",
+        _id=f"digest0",
         user_id=user.id,
         date_created=int(datetime.now().timestamp() * 1000),
         date_updated=int(datetime.now().timestamp() * 1000),
@@ -66,7 +61,7 @@ async def _setup_user(name: str, email: str):
     digest.create()
     for i in range(1, 4):
         digest = Digest(
-            id=f"digest{i}",
+            _id=f"digest{i}",
             user_id=user.id,
             date_created=int(datetime.now().timestamp() * 1000),
             date_updated=int(datetime.now().timestamp() * 1000),
@@ -78,7 +73,7 @@ async def _setup_user(name: str, email: str):
     # Create related data for the user
     for i in range(1, 3):
         thread = Thread(
-            id=f"thread{i}",
+            _id=f"thread{i}",
             user_id=user.id,
             date_created=int(datetime.now().timestamp() * 1000),
             date_updated=int(datetime.now().timestamp() * 1000),
@@ -100,7 +95,7 @@ async def _setup_user(name: str, email: str):
 
     for i in range(1, 20):
         message = Message(
-            id=f"message{i}",
+            _id=f"message{i}",
             user_id=user.id,
             date_created=int(datetime.now().timestamp() * 1000),
             date_updated=int(datetime.now().timestamp() * 1000),
@@ -133,33 +128,13 @@ async def _setup_user(name: str, email: str):
         message.create()
 
     data = Data(
-        id="data1",
+        _id="data1",
         user_id=user.id,
         date_created=int(datetime.now().timestamp() * 1000),
         type=DataType.EMAIL_RECEIVED,
         data={"key": "value"},
     )
     data.create()
-
-    dashboard_section = DashboardSection(
-        id="section1",
-        date_updated=int(datetime.now().timestamp() * 1000),
-        title="Sample Section",
-        description="This is a sample section",
-        status=DashboardSectionStatusEnum.READY,
-        time_range_start=int(datetime.now().timestamp() * 1000),
-        time_range_end=int(datetime.now().timestamp() * 1000),
-        data={"key": "value"},
-    )
-
-    dashboard = Dashboard(
-        id="dashboard1",
-        user_id=user.id,
-        date_created=int(datetime.now().timestamp() * 1000),
-        date_updated=int(datetime.now().timestamp() * 1000),
-        sections={"section1": dashboard_section},
-    )
-    dashboard.create()
 
 
 async def _setup_users():
