@@ -1,7 +1,8 @@
-from google.cloud.firestore_v1.base_query import FieldFilter
-from pydantic import BaseModel, Field
+from typing import Optional
+from swiftmail.core.mongodb import users
+from .base import MongoModel
 
-from swiftmail.core.firebase import USERS_COLLECTION, auth
+from pydantic import BaseModel, Field
 
 
 class UserMetadata(BaseModel):
@@ -51,10 +52,8 @@ class UserData(BaseModel):
     preferences: UserPreferences = Field(..., alias="preferences")
 
 
-class User(BaseModel):
-    id: str = Field(..., alias="id")
+class User(MongoModel):
     metadata: UserMetadata = Field(..., alias="metadata")
-
     dp: str = Field(..., alias="dp")
     email: str = Field(..., alias="email")
     name: str = Field(..., alias="name")
@@ -63,20 +62,18 @@ class User(BaseModel):
     credentials: UserCredentials = Field(..., alias="credentials")
 
     @staticmethod
-    def get_from_email(email: str):
+    def get_from_email(email: str) -> Optional["User"]:
         try:
-            print("email", email)
-            user = USERS_COLLECTION.document(email).get()
-            print("user", user)
-            return User.model_validate(user.to_dict())
+            user_doc = users.find_one({"email": email})
+            return User.from_mongo(user_doc) if user_doc else None
         except Exception as e:
             print(e)
             return None
 
     @staticmethod
-    def create(id: str, email: str, name: str, dp: str, password: str):
+    def create(id: str, email: str, name: str, dp: str, password: str) -> "User":
         user = User(
-            id=id,
+            _id=id,
             metadata=UserMetadata(last_seen=0, date_created=0, date_updated=0),
             email=email,
             dp=dp,
@@ -89,17 +86,9 @@ class User(BaseModel):
                         self_description="",
                     ),
                     inbox=UserInboxPreferences(
-                        priorities=[
-                            "Low",
-                            "Medium",
-                            "High",
-                        ],
+                        priorities=["Low", "Medium", "High"],
                         priority_rules=[],
-                        labels=[
-                            "Personal",
-                            "Work",
-                            "Shopping",
-                        ],
+                        labels=["Personal", "Work", "Shopping"],
                         label_rules=[],
                         categories=[
                             "Primary",
@@ -119,22 +108,9 @@ class User(BaseModel):
             credentials=UserCredentials(google_oauth=None),
         )
 
-        USERS_COLLECTION.document(user.id).set(user.model_dump())
-
-        try:
-            auth.create_user(
-                uid=user.id,
-                display_name=user.name,
-                email=user.email,
-                photo_url=user.dp,
-                email_verified=True,
-                password=password,
-            )
-        except Exception as e:
-            print(e)
-
+        users.insert_one(user.model_dump())
         return user
 
-    def update_creds_google_oauth(self, creds: UserOAuthCredentials | None):
+    def update_creds_google_oauth(self, creds: Optional[UserOAuthCredentials]):
         self.credentials.google_oauth = creds
-        USERS_COLLECTION.document(self.id).set(self.model_dump())
+        users.update_one({"_id": self._id}, {"$set": self.model_dump()})
