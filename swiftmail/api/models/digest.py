@@ -1,44 +1,40 @@
 import time
+from typing import Optional, List
+from swiftmail.core.mongodb import digests
+from .base import MongoModel
+from pydantic import Field
 
-from google.cloud.firestore import FieldFilter
-from pydantic import BaseModel, Field
 
-from swiftmail.core.firebase import DIGESTS_COLLECTION
-
-
-class Digest(BaseModel):
-    id: str = Field(..., alias="id")
+class Digest(MongoModel):
     user_id: str = Field(..., alias="user_id")
     date_created: int = Field(..., alias="date_created")
     date_updated: int = Field(..., alias="date_updated")
-
     title: str = Field(..., alias="title")
     description: str = Field(..., alias="description")
 
     @staticmethod
-    def get_by_id(id: str) -> "Digest | None":
-        doc = DIGESTS_COLLECTION.document(id).get()
-        if doc.exists:
-            return Digest(**doc.to_dict())  # type:ignore
-        return None
+    def get_by_id(digest_id: str) -> Optional["Digest"]:
+        digest = digests.find_one({"_id": digest_id})
+        return Digest.from_mongo(digest) if digest else None
 
     @staticmethod
-    def get_by_user_id(user_id: str) -> list["Digest"]:
+    def get_by_user_id(user_id: str) -> List["Digest"]:
+        cursor = digests.find({"user_id": user_id})
 
-        docs = DIGESTS_COLLECTION.where(
-            filter=FieldFilter("user_id", "==", user_id)
-        ).stream()
-        return [Digest(**doc.to_dict()) for doc in docs]
+        docs = []
+        for doc in cursor:
+            docs.append(Digest.from_mongo(doc))
+        return docs
 
     def create(self):
-        DIGESTS_COLLECTION.document(self.id).set(self.model_dump())
+        self.save(digests)
 
     def update_title(self, title: str):
         self.title = title
         self.date_updated = int(time.time())
-        DIGESTS_COLLECTION.document(self.id).set(self.model_dump())
+        self.save(digests)
 
     def update_description(self, description: str):
         self.description = description
         self.date_updated = int(time.time())
-        DIGESTS_COLLECTION.document(self.id).set(self.model_dump())
+        self.save(digests)
