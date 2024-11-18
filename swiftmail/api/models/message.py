@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Field
+from typing import Optional, List
+from swiftmail.core.mongodb import messages
+from .base import MongoModel
 
-from swiftmail.core.firebase import MESSAGES_COLLECTION
+from pydantic import BaseModel, Field
 
 
 class MessageEmailData(BaseModel):
@@ -22,8 +24,7 @@ class MessageReminders(BaseModel):
     snoozed: list[str] = Field(..., alias="snoozed")
 
 
-class Message(BaseModel):
-    id: str = Field(..., alias="id")
+class Message(MongoModel):
     user_id: str = Field(..., alias="user_id")
     date_updated: int = Field(..., alias="date_updated")
     date_created: int = Field(..., alias="date_created")
@@ -43,14 +44,12 @@ class Message(BaseModel):
     unsubscribe_link: str | None = Field(None, alias="unsubscribe_link")
 
     @staticmethod
-    def get_by_id(message_id: str) -> "Message | None":
-        message = MESSAGES_COLLECTION.document(message_id).get()
-        if message.exists:
-            return Message(**message.to_dict())  # type:ignore
-        return None
+    def get_by_id(message_id: str) -> Optional["Message"]:
+        message = messages.find_one({"_id": message_id})
+        return Message.from_mongo(message) if message else None
 
     def save(self):
-        MESSAGES_COLLECTION.document(self.id).set(self.model_dump())
+        messages.update_one({"_id": self._id}, {"$set": self.model_dump()}, upsert=True)
 
     def create(self):
         self.save()
