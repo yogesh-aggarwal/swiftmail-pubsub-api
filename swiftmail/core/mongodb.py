@@ -1,26 +1,26 @@
 from pymongo import MongoClient
 from pymongo.database import Database
 
-client = MongoClient("mongodb://localhost:27017")
+from swiftmail.core.constants import MONGODB_URI
+
+client = MongoClient(MONGODB_URI)
 db: Database = client["swiftmail"]
 
 # Collections
-users = db["users"]
-messages = db["messages"]
-threads = db["threads"]
-reminders = db["reminders"]
-notifications = db["notifications"]
-digests = db["digests"]
-dashboards = db["dashboards"]
-data = db["data"]
+USERS = db["users"]
+MESSAGES = db["messages"]
+THREADS = db["threads"]
+REMINDERS = db["reminders"]
+NOTIFICATIONS = db["notifications"]
+DIGESTS = db["digests"]
+DATA = db["data"]
 
 # Create indexes
-users.create_index("email", unique=True)
-messages.create_index("user_id")
-messages.create_index("thread_id")
-threads.create_index("user_id")
-reminders.create_index("user_id")
-notifications.create_index("user_id")
-digests.create_index("user_id")
-dashboards.create_index("user_id")
-data.create_index("user_id") 
+USERS.create_index("email", unique=True)
+MESSAGES.create_index("user_id")
+MESSAGES.create_index("thread_id")
+THREADS.create_index("user_id")
+REMINDERS.create_index("user_id")
+NOTIFICATIONS.create_index("user_id")
+DIGESTS.create_index("user_id")
+DATA.create_index("user_id")
