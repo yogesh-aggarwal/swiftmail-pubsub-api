@@ -1,8 +1,3 @@
-import eventlet
-import logging
-
-eventlet.monkey_patch()
-
 from flask import Flask
 from flask_cors import CORS
 
