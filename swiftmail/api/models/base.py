@@ -9,11 +9,14 @@ T = TypeVar("T", bound="MongoModel")
 class MongoModel(BaseModel):
     """Base model for MongoDB documents"""
 
-    id: str = Field(default_factory=lambda: str(ObjectId()), alias="_id")
+    class Config:
+        arbitrary_types_allowed = True
+
+    id: ObjectId = Field(default_factory=lambda: ObjectId(), alias="_id")
 
     def model_dump(self, *args, **kwargs) -> Dict[str, Any]:
         """Convert to dict, using _id for MongoDB"""
-        data = super().model_dump(*args, **kwargs)
+        data = super().model_dump(*args, **kwargs, by_alias=True)
         return data
 
     @classmethod

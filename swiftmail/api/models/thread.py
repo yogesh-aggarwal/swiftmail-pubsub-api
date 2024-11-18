@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseModel, Field
 
 from .base import MongoModel
@@ -30,6 +31,11 @@ class Thread(MongoModel):
 
     flags: ThreadFlags = Field(..., alias="flags")
 
+    priority: str = Field(alias="priority")
+    categories: List[str] = Field(default_factory=list, alias="categories")
+    labels: List[str] = Field(default_factory=list, alias="labels")
+    digests: List[str] = Field(default_factory=list, alias="digests")
+
     @staticmethod
     def get_by_id(thread_id: str) -> "Thread | None":
         """
@@ -43,7 +49,7 @@ class Thread(MongoModel):
         """
         thread_doc = THREADS.find_one({"_id": thread_id})
         if thread_doc:
-            return Thread.from_mongo(**thread_doc)
+            return Thread.from_mongo(thread_doc)
         return None
 
     @staticmethod
@@ -71,7 +77,7 @@ class Thread(MongoModel):
 
         results = []
         for msg in messages:
-            result = Message.from_mongo(**msg)
+            result = Message.from_mongo(msg)
             if result:
                 results.append(result)
 
@@ -144,4 +150,75 @@ class Thread(MongoModel):
     def mark_as_sent(self):
         """Mark as sent and save"""
         self.flags.is_sent = True
+        self.save()
+
+    def add_category(self, category: str):
+        """Add a category if it doesn't exist"""
+        if category not in self.categories:
+            self.categories.append(category)
+            self.save()
+
+    def remove_category(self, category: str):
+        """Remove a category if it exists"""
+        if category in self.categories:
+            self.categories.remove(category)
+            self.save()
+
+    def add_label(self, label: str):
+        """Add a label if it doesn't exist"""
+        if label not in self.labels:
+            self.labels.append(label)
+            self.save()
+
+    def remove_label(self, label: str):
+        """Remove a label if it exists"""
+        if label in self.labels:
+            self.labels.remove(label)
+            self.save()
+
+    def add_digest(self, digest_id: str):
+        """Add a digest reference if it doesn't exist"""
+        if digest_id not in self.digests:
+            self.digests.append(digest_id)
+            self.save()
+
+    def remove_digest(self, digest_id: str):
+        """Remove a digest reference if it exists"""
+        if digest_id in self.digests:
+            self.digests.remove(digest_id)
+            self.save()
+
+    def clear_categories(self):
+        """Remove all categories"""
+        self.categories = []
+        self.save()
+
+    def clear_labels(self):
+        """Remove all labels"""
+        self.labels = []
+        self.save()
+
+    def clear_digests(self):
+        """Remove all digest references"""
+        self.digests = []
+        self.save()
+
+    def set_priority(self, priority: str):
+        """Set the thread priority"""
+        self.priority = priority
+        self.save()
+
+    def set_categories(self, categories: List[str]):
+        """Set the entire categories list"""
+        self.categories = list(set(categories))  # Remove duplicates
+        self.save()
+
+    def set_labels(self, labels: List[str]):
+        """Set the entire labels list"""
+        self.labels = list(set(labels))  # Remove duplicates
+        self.save()
+
+    def set_digests(self, digests: List[str]):
+        """Set the entire digests list"""
+        self.digests = list(set(digests))  # Remove duplicates
         self.save()

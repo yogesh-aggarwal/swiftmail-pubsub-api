@@ -33,12 +33,6 @@ class Message(MongoModel):
     email_data: MessageEmailData = Field(..., alias="email_data")
 
     summary: str = Field(..., alias="summary")
-
-    priorities: list[str] = Field(..., alias="priorities")
-    categories: list[str] = Field(..., alias="categories")
-    labels: list[str] = Field(..., alias="labels")
-    digests: list[str] = Field(..., alias="digests")
-
     embedding: list[float] = Field(..., alias="embedding")
     keywords: list[str] = Field(..., alias="keywords")
     unsubscribe_link: str | None = Field(None, alias="unsubscribe_link")
@@ -56,22 +50,6 @@ class Message(MongoModel):
 
     def update_summary(self, summary: str):
         self.summary = summary
-        self._save()
-
-    def update_priorities(self, priorities: list[str]):
-        self.priorities = priorities
-        self._save()
-
-    def update_categories(self, categories: list[str]):
-        self.categories = categories
-        self._save()
-
-    def update_labels(self, labels: list[str]):
-        self.labels = labels
-        self._save()
-
-    def update_digests(self, digests: list[str]):
-        self.digests = digests
         self._save()
 
     def update_embedding(self, embedding: list[float]):

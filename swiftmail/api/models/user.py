@@ -71,9 +71,12 @@ class User(MongoModel):
             return None
 
     @staticmethod
-    def create(id: str, email: str, name: str, dp: str, password: str) -> "User":
+    def create(email: str, name: str, dp: str, password: str) -> "User":
+        from swiftmail.core.firebase import auth
+        from swiftmail.core.mongodb import USERS
+
+        # Create MongoDB user
         user = User(
-            _id=id,
             metadata=UserMetadata(last_seen=0, date_created=0, date_updated=0),
             email=email,
             dp=dp,
@@ -109,6 +112,31 @@ class User(MongoModel):
         )
 
         USERS.insert_one(user.model_dump())
+
+        # First check if user exists in Firebase
+        try:
+            existing_user = auth.get_user_by_email(email)
+            # If user exists, delete from Firebase
+            if existing_user:
+                auth.delete_user(existing_user.uid)
+        except auth.UserNotFoundError:
+            pass  # User doesn't exist in Firebase, which is fine
+        except Exception as e:
+            print(f"Error checking/deleting Firebase user: {e}")
+
+        # Create new Firebase user
+        try:
+            auth.create_user(
+                uid=str(user.id),
+                email=email,
+                password=password,
+                display_name=name,
+                photo_url=dp,
+            )
+        except Exception as e:
+            print(f"Error creating Firebase user: {e}")
+            raise e
+
         return user
 
     def update_creds_google_oauth(self, creds: Optional[UserOAuthCredentials]):
