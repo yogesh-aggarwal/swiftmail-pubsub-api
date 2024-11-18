@@ -1,10 +1,7 @@
-from flask import g
-from flask_socketio import SocketIO, emit, disconnect
+from flask_socketio import SocketIO
 
-from swiftmail.api.middlewares.auth import get_user_from_request
-from swiftmail.api.models.digest import Digest
-from swiftmail.core.utils import generate_id
-import time
+from .handlers.connect import on_connect
+from .handlers.inbox import on_inbox
 
 
 def init_websockets(app):
@@ -12,12 +9,10 @@ def init_websockets(app):
 
     @socketio.on("connect")
     def _():
-        g.user = get_user_from_request()
-        if not g.user:
-            disconnect()
-            return
+        on_connect()
 
-        print("Connected successfully as ", g.user)
-        emit("connected", {"message": f"Connected successfully as {g.user.email}"})
+    @socketio.on("inbox")
+    def _():
+        on_inbox()
 
     return socketio

@@ -10,18 +10,6 @@ from swiftmail.core.constants import ALLOWED_ORIGINS, PORT
 from swiftmail.api.rest.routes import root_router
 from swiftmail.api.ws import init_websockets
 
-# Disable Werkzeug logging
-log = logging.getLogger("werkzeug")
-log.setLevel(logging.ERROR)
-
-# Disable Engine.IO logging
-engineio_logger = logging.getLogger("engineio")
-engineio_logger.setLevel(logging.ERROR)
-
-# Disable Socket.IO logging
-socketio_logger = logging.getLogger("socketio")
-socketio_logger.setLevel(logging.ERROR)
-
 app = Flask(__name__)
 app.logger.disabled = True
 CORS(app, origins="*" or ALLOWED_ORIGINS)
