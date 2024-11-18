@@ -72,3 +72,10 @@ assert (
 ), "Please set the GOOGLE_OAUTH_REDIRECT_URI environment variable."
 
 # ---------------------------------------------------------------------------------------
+# MongoDB
+# ---------------------------------------------------------------------------------------
+
+MONGODB_URI = os.getenv("MONGODB_URI")
+assert MONGODB_URI is not None, "Please set the MONGODB_URI environment variable."
+
+# ---------------------------------------------------------------------------------------
