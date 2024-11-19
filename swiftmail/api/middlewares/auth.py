@@ -3,6 +3,7 @@ from functools import wraps
 from flask import jsonify, request, g
 from flask_socketio import disconnect, emit
 from urllib.parse import parse_qs
+from typing import Any
 
 from swiftmail.api.models.user import User
 from swiftmail.core.firebase import auth
@@ -67,8 +68,6 @@ def firebase_auth_middleware():
         return jsonify({"message": "unauthorized"}), 401
 
     setattr(request, "user", user)
-
-    return user
 
 
 def firebase_auth_middleware_wrapped(func):
