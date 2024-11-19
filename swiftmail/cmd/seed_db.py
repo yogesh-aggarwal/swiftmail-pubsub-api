@@ -123,6 +123,7 @@ async def create_messages(user_id: str, thread_ids: list[str]) -> None:
                 cc_email="cc@example.com",
                 bcc_email="bcc@example.com",
             ),
+            thread_id=random.choice(thread_ids),
             reminders=MessageReminders(
                 follow_up=[],
                 forgetting=[],

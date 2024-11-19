@@ -32,6 +32,8 @@ class Message(MongoModel):
     reminders: MessageReminders = Field(..., alias="reminders")
     email_data: MessageEmailData = Field(..., alias="email_data")
 
+    thread_id: str = Field(..., alias="thread_id")
+
     summary: str = Field(..., alias="summary")
     embedding: list[float] = Field(..., alias="embedding")
     keywords: list[str] = Field(..., alias="keywords")

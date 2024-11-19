@@ -12,9 +12,4 @@ app.register_blueprint(root_router, url_prefix="/")
 
 
 def start_server():
-    app.run(
-        host="0.0.0.0",
-        port=PORT,
-        debug=True,
-        log_output=False,  # Disable Socket.IO server logs
-    )
+    app.run(host="0.0.0.0", port=PORT, debug=True)
