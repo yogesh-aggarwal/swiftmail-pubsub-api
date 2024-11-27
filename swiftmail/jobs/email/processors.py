@@ -4,11 +4,14 @@ from swiftmail.jobs.email.models import (
     EmailDigestResult,
     EmailSummaryResult,
     EmailEmbeddingResult,
+    ThreadSummaryResult,
 )
 from swiftmail.factory.prompts import PromptFactory
 from swiftmail.services.llm.utils import get_llm_from_string
 from swiftmail.services.embedding.utils import get_embedding_from_string
 from swiftmail.api.models.digest import Digest
+from swiftmail.services.llm import LLMService
+import json
 
 
 class EmailProcessor:
@@ -89,9 +92,31 @@ class SummaryProcessor(EmailProcessor):
         llm_prompt = PromptFactory.email_summarize(
             html_content=self.job_data.email.html_content
         )
+        print(llm_prompt.messages.__len__())
 
         res = llm_model.run(llm_prompt, temperature=0)
         if not res:
             return EmailSummaryResult(summary="")
 
         return EmailSummaryResult.model_validate_json(res)
+
+
+class ThreadSummaryProcessor(EmailProcessor):
+    def process(self, message_summaries: list[str]) -> ThreadSummaryResult:
+        """Process the thread summaries and return a consolidated summary"""
+        if not message_summaries:
+            return ThreadSummaryResult(summary="")
+
+        llm_model = get_llm_from_string(self.user_prefs.ai.model)
+        prompt = PromptFactory.thread_summarize(message_summaries=message_summaries)
+
+        res = llm_model.run(prompt, temperature=0)
+        if not res:
+            return ThreadSummaryResult(summary="\n".join(message_summaries))
+
+        try:
+            result = json.loads(res)
+            return ThreadSummaryResult(summary=result["thread_summary"])
+        except (json.JSONDecodeError, KeyError):
+            # Fallback to simple concatenation if LLM fails
+            return ThreadSummaryResult(summary="\n".join(message_summaries))

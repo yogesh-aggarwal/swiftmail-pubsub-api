@@ -32,3 +32,8 @@ class EmailSummaryResult(BaseModel):
 # Email Embedding Result Models
 class EmailEmbeddingResult(BaseModel):
     embedding: list[float]
+
+
+# Thread Summary Result Models
+class ThreadSummaryResult(BaseModel):
+    summary: str

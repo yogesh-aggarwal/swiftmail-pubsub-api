@@ -52,6 +52,9 @@ def import_messages():
             from_email = next(
                 (h["value"] for h in headers if h["name"].lower() == "from"), ""
             )
+            from_name = next(
+                (h["value"] for h in headers if h["name"].lower() == "fromname"), ""
+            )
             to_email = next(
                 (h["value"] for h in headers if h["name"].lower() == "to"), ""
             )
@@ -60,6 +63,9 @@ def import_messages():
             )
             bcc_email = next(
                 (h["value"] for h in headers if h["name"].lower() == "bcc"), ""
+            )
+            snippet = next(
+                (h["value"] for h in headers if h["name"].lower() == "snippet"), ""
             )
 
             # Get message body
@@ -76,6 +82,8 @@ def import_messages():
                 message_id=message["id"],
                 thread_id=message["threadId"],
                 from_email=from_email,
+                from_name=from_name,
+                snippet=snippet,
                 to_email=to_email,
                 cc_email=cc_email,
                 bcc_email=bcc_email,
