@@ -156,3 +156,21 @@ class PromptFactory:
                 LLMMessage("user", user_prompt),
             ],
         )
+
+    @staticmethod
+    def thread_summarize(*, message_summaries: list[str]):
+        with open("assets/thread_summarize/system.txt") as f:
+            system_prompt = f.read()
+        with open("assets/thread_summarize/user.txt") as f:
+            user_prompt = f.read().strip()
+            user_prompt = user_prompt.format(
+                input_json=json.dumps({"summaries": message_summaries})
+            )
+
+        return LLMPrompt(
+            "Thread Summarize",
+            [
+                LLMMessage("system", system_prompt),
+                LLMMessage("user", user_prompt),
+            ],
+        )
