@@ -56,4 +56,4 @@ def callback():
     access_token, refresh_token = flow.credentials.token, flow.credentials.refresh_token
     user.update_creds_google_oauth(UserOAuthCredentials(access_token=access_token, refresh_token=refresh_token))  # type: ignore
 
-    return redirect("http://localhost:5173/settings")
+    return redirect("https://swiftmail-web.vercel.app")
