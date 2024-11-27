@@ -10,12 +10,14 @@ class MessageEmailData(BaseModel):
     thread_id: str = Field(..., alias="thread_id")
 
     from_email: str = Field(..., alias="from_email")
+    from_name: str = Field(..., alias="from_name")
     to_email: str = Field(..., alias="to_email")
     cc_email: str = Field(..., alias="cc_email")
     bcc_email: str = Field(..., alias="bcc_email")
 
     subject: str = Field(..., alias="subject")
     html_content: str = Field(..., alias="html_content")
+    snippet: str = Field(..., alias="snippet")
 
 
 class MessageReminders(BaseModel):
@@ -44,8 +46,21 @@ class Message(MongoModel):
         message = MESSAGES.find_one({"id": message_id})
         return Message.from_mongo(message) if message else None
 
+    @staticmethod
+    def get_by_thread_id(thread_id: str) -> list["Message"]:
+        messages = MESSAGES.find({"thread_id": thread_id}).sort("date_created", 1)
+
+        result = []
+        for message in messages:
+            if message:
+                result.append(Message.from_mongo(message))
+        return result
+
     def _save(self):
         MESSAGES.update_one({"id": self.id}, {"$set": self.model_dump()}, upsert=True)
+
+    def save(self):
+        self._save()
 
     def create(self):
         self._save()

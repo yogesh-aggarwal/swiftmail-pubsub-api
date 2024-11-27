@@ -15,7 +15,6 @@ class ThreadFlags(BaseModel):
 
     is_spam: bool = Field(..., alias="is_spam")
     is_trash: bool = Field(..., alias="is_trash")
-    is_sent: bool = Field(..., alias="is_sent")
 
 
 class Thread(MongoModel):
