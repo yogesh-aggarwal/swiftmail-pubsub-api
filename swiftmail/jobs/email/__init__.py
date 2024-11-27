@@ -87,15 +87,7 @@ def _create_thread_if_not_exists(
         _update_thread_summary(thread.id, job_data.user)
         return thread
 
-    # Initialize processors
-    digest_processor = DigestProcessor(job_data)
-
-    # Run all processing tasks in parallel
-    with ThreadPoolExecutor() as executor:
-        future_digests = executor.submit(digest_processor.process)
-
-    # Get results
-    digests_result = future_digests.result()
+    digests_result = DigestProcessor(job_data).process()
 
     thread = Thread(
         id=job_data.email.thread_id,
@@ -142,16 +134,20 @@ def process_email(job_data_str: str):
     embedding_processor = EmbeddingProcessor(job_data)
     classification_processor = ClassificationProcessor(job_data)
 
-    # Run all processing tasks in parallel
-    with ThreadPoolExecutor() as executor:
-        future_summary = executor.submit(summary_processor.process)
-        future_embedding = executor.submit(embedding_processor.process)
-        future_classification = executor.submit(classification_processor.process)
+    # # Run all processing tasks in parallel
+    # with ThreadPoolExecutor() as executor:
+    #     future_summary = executor.submit(summary_processor.process)
+    #     future_embedding = executor.submit(embedding_processor.process)
+    #     future_classification = executor.submit(classification_processor.process)
 
-    # Get results
-    summary_result = future_summary.result()
-    embedding_result = future_embedding.result()
-    classification_result = future_classification.result()
+    # # Get results
+    # summary_result = future_summary.result()
+    # embedding_result = future_embedding.result()
+    # classification_result = future_classification.result()
+
+    summary_result = summary_processor.process()
+    embedding_result = embedding_processor.process()
+    classification_result = classification_processor.process()
 
     # Store results
     message = Message(

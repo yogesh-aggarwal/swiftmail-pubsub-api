@@ -1,5 +1,3 @@
-import os
-from pprint import pprint
 from flask import request
 import base64
 import json
@@ -25,8 +23,6 @@ def new_message():
     if has_run:
         return "OK", 200
     has_run = True
-
-    os.system("clear")
 
     # Decode the base64 encoded data
     encoded_data = payload["message"]["data"]
