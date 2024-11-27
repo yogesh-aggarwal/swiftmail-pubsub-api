@@ -242,3 +242,24 @@ class Gmail(MailService):
                 return
 
         raise RuntimeError("Failed to label the message")
+
+    def get_message(self, *, credentials: Credentials, message_id: str):
+        """Get a Gmail message by ID.
+
+        Args:
+            credentials: Google OAuth2 credentials object
+            message_id: The Gmail message ID to fetch
+        """
+        service = build("gmail", "v1", credentials=credentials)
+        message = service.users().messages().get(userId="me", id=message_id).execute()
+        return message
+
+    def get_history(self, *, credentials: Credentials, history_id: str):
+        service = build("gmail", "v1", credentials=credentials)
+        history = (
+            service.users()
+            .history()
+            .list(userId="me", startHistoryId=history_id)
+            .execute()
+        )
+        return history
