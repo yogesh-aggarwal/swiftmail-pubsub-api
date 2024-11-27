@@ -1,8 +1,16 @@
 import os
+from typing import Any
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+def get_from_env_or_raise(key: str, default: Any | None = None) -> str:
+    value = os.getenv(key, default)
+    assert value is not None, f"Please set the {key} environment variable."
+    return value
+
 
 # ---------------------------------------------------------------------------------------
 # General
@@ -22,60 +30,40 @@ POLL_INTERVAL_IN_SECONDS = 10
 # ---------------------------------------------------------------------------------------
 
 # GCP credentials file
-GCP_CREDENTIALS_FILE = os.getenv("GCP_CREDENTIALS_FILE")
-assert (
-    GCP_CREDENTIALS_FILE is not None
-), "Please set the GCP_CREDENTIALS_FILE environment variable."
+GCP_CREDENTIALS_FILE = get_from_env_or_raise("GCP_CREDENTIALS_FILE")
 assert os.path.exists(GCP_CREDENTIALS_FILE), f"{GCP_CREDENTIALS_FILE} does not exist."
 
 # ---------------------------------------------------------------------------------------
 # General
 # ---------------------------------------------------------------------------------------
 
-PORT = int(os.getenv("PORT") or 3000)
-assert PORT is not None, "Please set the PORT environment variable."
+PORT = int(get_from_env_or_raise("PORT", 3000))
 
 # ---------------------------------------------------------------------------------------
 # Gen AI
 # ---------------------------------------------------------------------------------------
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-assert OPENAI_API_KEY is not None, "Please set the OPENAI_API_KEY environment variable."
-
-HF_API_KEY = os.getenv("HF_API_KEY")
-assert HF_API_KEY is not None, "Please set the HF_API_KEY environment variable."
+OPENAI_API_KEY = get_from_env_or_raise("OPENAI_API_KEY")
+HF_API_KEY = get_from_env_or_raise("HF_API_KEY")
 
 # ---------------------------------------------------------------------------------------
 # URIS
 # ---------------------------------------------------------------------------------------
 
-REDIS_URI = os.getenv("REDIS_URI")
-assert REDIS_URI is not None, "Please set the REDIS_URI environment variable."
+REDIS_URI = get_from_env_or_raise("REDIS_URI")
 
 # ---------------------------------------------------------------------------------------
 # Google
 # ---------------------------------------------------------------------------------------
 
-GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
-assert (
-    GOOGLE_OAUTH_CLIENT_ID is not None
-), "Please set the GOOGLE_OAUTH_CLIENT_ID environment variable."
-
-GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
-assert (
-    GOOGLE_OAUTH_CLIENT_SECRET is not None
-), "Please set the GOOGLE_OAUTH_CLIENT_SECRET environment variable."
-
-GOOGLE_OAUTH_REDIRECT_URI = os.getenv("GOOGLE_OAUTH_REDIRECT_URI")
-assert (
-    GOOGLE_OAUTH_REDIRECT_URI is not None
-), "Please set the GOOGLE_OAUTH_REDIRECT_URI environment variable."
+GOOGLE_OAUTH_CLIENT_ID = get_from_env_or_raise("GOOGLE_OAUTH_CLIENT_ID")
+GOOGLE_OAUTH_CLIENT_SECRET = get_from_env_or_raise("GOOGLE_OAUTH_CLIENT_SECRET")
+GOOGLE_OAUTH_REDIRECT_URI = get_from_env_or_raise("GOOGLE_OAUTH_REDIRECT_URI")
 
 # ---------------------------------------------------------------------------------------
 # MongoDB
 # ---------------------------------------------------------------------------------------
 
-MONGODB_URI = os.getenv("MONGODB_URI")
-assert MONGODB_URI is not None, "Please set the MONGODB_URI environment variable."
+MONGODB_URI = get_from_env_or_raise("MONGODB_URI")
 
 # ---------------------------------------------------------------------------------------
