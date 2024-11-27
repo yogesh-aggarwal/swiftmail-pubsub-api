@@ -27,7 +27,6 @@ def signup():
     # Step 3: Create user
     try:
         User.create(
-            id=body.uid,
             email=body.email,
             name=body.name,
             dp=body.dp,
