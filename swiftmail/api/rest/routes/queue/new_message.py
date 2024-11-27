@@ -11,18 +11,11 @@ from swiftmail.core.constants import GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT
 
 from google.oauth2.credentials import Credentials
 
-has_run = False
-
 
 def new_message():
     payload = request.json
     if payload is None:
         return "No payload", 400
-
-    global has_run
-    if has_run:
-        return "OK", 200
-    has_run = True
 
     # Decode the base64 encoded data
     encoded_data = payload["message"]["data"]
