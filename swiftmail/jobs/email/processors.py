@@ -1,3 +1,4 @@
+import rich
 from swiftmail.jobs.email.models import (
     ProcessEmailJobData,
     EmailClassificationResult,
@@ -92,7 +93,6 @@ class SummaryProcessor(EmailProcessor):
         llm_prompt = PromptFactory.email_summarize(
             html_content=self.job_data.email.html_content
         )
-        print(llm_prompt.messages.__len__())
 
         res = llm_model.run(llm_prompt, temperature=0)
         if not res:
