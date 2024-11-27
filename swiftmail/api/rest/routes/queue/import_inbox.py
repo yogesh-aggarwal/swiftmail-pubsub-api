@@ -11,7 +11,7 @@ from swiftmail.core.constants import (
 )
 
 
-def import_messages():
+def import_inbox():
     user: User = getattr(request, "user", None)  # type: ignore
 
     if not user.credentials.google_oauth:
