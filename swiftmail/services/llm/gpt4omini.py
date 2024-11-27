@@ -1,7 +1,8 @@
 from typing import override
-# from openai import OpenAI
+from openai import OpenAI
+import rich
 
-# from swiftmail.core.constants import OPENAI_API_KEY
+from swiftmail.core.constants import OPENAI_API_KEY
 
 from . import LLMPrompt, LLMService
 
@@ -11,20 +12,20 @@ class GPT4oMini(LLMService):
 
     @override
     def run(self, messages: LLMPrompt, temperature: float | None = None) -> str | None:
+        rich.print(messages.to_dict())
+
         temperature = temperature if temperature is not None else 0
 
-        return "Hello, world!"
+        client = OpenAI(api_key=OPENAI_API_KEY)
 
-        # client = OpenAI(api_key=OPENAI_API_KEY)
+        res = client.chat.completions.create(
+            model=self.model,
+            messages=messages.to_dict(),  # type: ignore
+            max_tokens=16_000,
+            temperature=temperature,
+        )
+        if not res.choices:
+            return None
+        res = res.choices[0].message
 
-        # res = client.chat.completions.create(
-        #     model=self.model,
-        #     messages=messages.to_dict(),  # type: ignore
-        #     max_tokens=16_000,
-        #     temperature=temperature,
-        # )
-        # if not res.choices:
-        #     return None
-        # res = res.choices[0].message
-
-        # return res.content
+        return res.content
