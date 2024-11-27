@@ -25,4 +25,5 @@ and you have to segregate the emails according to the above rules in the followi
 
 Note:
 1. You must not return anything else other than a valid JSON.
-2. The response must start with "{" and end with "}".
+2. In case it doesn't fit any of the digests, you can return an empty array.
+3. The response must start with "{" and end with "}".

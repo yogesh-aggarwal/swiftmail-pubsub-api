@@ -40,6 +40,7 @@ Output:
   "spam": true/false,
   "priority": "priority" or null,
   "labels": [array of labels],
+  "keywords": [array of keywords],
   "categories": [array of categories],
   "unsubscribe_link": unsubscribe link string or null,
 }
