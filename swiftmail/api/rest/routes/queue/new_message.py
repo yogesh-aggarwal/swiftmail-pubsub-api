@@ -47,8 +47,6 @@ def new_message():
             history_types=["messageAdded"],
         )
 
-        rich.print(history)
-
         if "history" not in history:
             return "No history", 404
 
@@ -116,8 +114,10 @@ def new_message():
                 #     job_id=f"email_process_{email_data.message_id}",
                 #     job_timeout=300,  # 5 minutes timeout
                 # )
-                process_email(job.model_dump_json())
-
+                try:
+                    process_email(job.model_dump_json())
+                except:
+                    rich.print("failed job:", job.email.message_id)
     except Exception as e:
         rich.print(e)
         return "Error", 500
