@@ -44,18 +44,20 @@ def new_message():
                 refresh_token=user.credentials.google_oauth.refresh_token,
             ),
             history_id=message_data["historyId"],
+            history_types=["messageAdded"],
         )
 
         rich.print(history)
 
         if "history" not in history:
-            return "OK", 200
+            return "No history", 404
 
         for history in history["history"]:
             if "messagesAdded" not in history:
                 continue
             messages_added = history["messagesAdded"]
-            for message in messages_added:
+            for added_message in messages_added:
+                message = added_message["message"]
                 if "id" not in message:
                     continue
                 message_id = message["id"]

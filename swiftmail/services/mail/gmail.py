@@ -254,12 +254,24 @@ class Gmail(MailService):
         message = service.users().messages().get(userId="me", id=message_id).execute()
         return message
 
-    def get_history(self, *, credentials: Credentials, history_id: str):
+    def get_history(
+        self,
+        *,
+        credentials: Credentials,
+        history_id: str,
+        history_types: list[str] = ["messageAdded"],
+        label_id: str | None = None,
+    ):
         service = build("gmail", "v1", credentials=credentials)
         history = (
             service.users()
             .history()
-            .list(userId="me", startHistoryId=history_id)
+            .list(
+                userId="me",
+                historyTypes=history_types,
+                labelId=label_id,
+                startHistoryId=history_id,
+            )
             .execute()
         )
         return history
