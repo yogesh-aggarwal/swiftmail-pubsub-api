@@ -85,6 +85,7 @@ def _create_thread_if_not_exists(
     thread = Thread.get_by_id(job_data.email.thread_id)
     if thread is not None:
         _update_thread_summary(thread.id, job_data.user)
+        thread.update_snippet(job_data.email.snippet)
         return thread
 
     digests_result = DigestProcessor(job_data).process()
@@ -94,7 +95,7 @@ def _create_thread_if_not_exists(
         user_id=str(job_data.user.id),
         date_updated=int(time.time() * 1000),
         date_created=int(time.time() * 1000),
-        title=job_data.email.snippet,
+        title=job_data.email.subject,
         description=job_data.email.snippet,
         thread_id=job_data.email.thread_id,
         flags=ThreadFlags(

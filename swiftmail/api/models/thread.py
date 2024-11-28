@@ -89,6 +89,11 @@ class Thread(MongoModel):
         """Create a new thread in the database"""
         self.save()
 
+    def update_snippet(self, snippet: str):
+        """Update the thread snippet"""
+        self.description = snippet
+        self.save()
+
     def mark_as_read(self):
         """Mark the thread as read and save"""
         self.flags.is_read = True
@@ -144,11 +149,6 @@ class Thread(MongoModel):
     def mark_as_unmuted(self):
         """Mark as unmuted and save"""
         self.flags.is_muted = False
-        self.save()
-
-    def mark_as_sent(self):
-        """Mark as sent and save"""
-        self.flags.is_sent = True
         self.save()
 
     def add_category(self, category: str):
