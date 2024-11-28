@@ -34,6 +34,7 @@ def new_message():
             or user.credentials is None
             or user.credentials.google_oauth is None
         ):
+            rich.print("User not found")
             return "User not found or missing credentials", 404
 
         history = Gmail().get_history(
@@ -48,6 +49,7 @@ def new_message():
         )
 
         if "history" not in history:
+            rich.print("History not found")
             return "No history", 404
 
         for history in history["history"]:
