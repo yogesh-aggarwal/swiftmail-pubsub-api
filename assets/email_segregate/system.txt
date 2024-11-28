@@ -38,7 +38,7 @@ Input:
 Output:
 {
   "spam": true/false,
-  "priority": "priority" or null,
+  "priority": "priority",
   "labels": [array of labels],
   "keywords": [array of keywords],
   "categories": [array of categories],
@@ -55,6 +55,7 @@ Here are some rules:
 6. Keep a special check/eye on spams it must not pass the system check if it's likely a spam even 1%.
 7. If the email is spam, priority, labels, categories, and unsubscribe_link must be null.
 8. If the user has enforced the email to not be spam, then the email must not be spam even if it seems like a spam.
+9. Make sure you don't miss any of the fields mentioned above.
 
 Note:
 1. You must not return anything else other than a valid JSON.

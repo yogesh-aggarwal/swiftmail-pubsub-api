@@ -24,4 +24,5 @@ Rules:
 
 Note:
 1. You must not return anything else other than a valid JSON.
-2. The response must start with "{" and end with "}". 
+2. The response must start with "{" and end with "}".
+3. The summary should be as if you are taking to the person who is busy and you are summarizing the email for them.
