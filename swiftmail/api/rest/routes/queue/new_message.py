@@ -46,63 +46,75 @@ def new_message():
             history_id=message_data["historyId"],
         )
 
-        message_id = history["history"][0]["messages"][0]["id"]
-        email_content = Gmail().get_message(
-            credentials=Credentials(
-                client_id=GOOGLE_OAUTH_CLIENT_ID,
-                client_secret=GOOGLE_OAUTH_CLIENT_SECRET,
-                token=user.credentials.google_oauth.access_token,
-                refresh_token=user.credentials.google_oauth.refresh_token,
-            ),
-            message_id=message_id,
-        )
+        rich.print(history)
 
-        email_data = MessageEmailData(
-            message_id=email_content["id"],
-            thread_id=email_content["threadId"],
-            from_email=next(
-                h["value"]
-                for h in email_content["payload"]["headers"]
-                if h["name"] == "From"
-            ),
-            from_name=next(
-                h["value"].split("<")[0].strip(' "')
-                for h in email_content["payload"]["headers"]
-                if h["name"] == "From"
-            ),
-            to_email=next(
-                h["value"]
-                for h in email_content["payload"]["headers"]
-                if h["name"] == "To"
-            ),
-            cc_email="",  # Add CC if present in headers
-            bcc_email="",  # Add BCC if present in headers
-            snippet=email_content["snippet"],
-            subject=next(
-                h["value"]
-                for h in email_content["payload"]["headers"]
-                if h["name"] == "Subject"
-            ),
-            html_content=base64.urlsafe_b64decode(
-                next(
-                    part["body"]["data"]
-                    for part in email_content["payload"]["parts"]
-                    if part["mimeType"] == "text/html"
+        if "history" not in history:
+            return "OK", 200
+
+        for history in history["history"]:
+            if "messagesAdded" not in history:
+                continue
+            messages_added = history["messagesAdded"]
+            for message in messages_added:
+                if "id" not in message:
+                    continue
+                message_id = message["id"]
+                email_content = Gmail().get_message(
+                    credentials=Credentials(
+                        client_id=GOOGLE_OAUTH_CLIENT_ID,
+                        client_secret=GOOGLE_OAUTH_CLIENT_SECRET,
+                        token=user.credentials.google_oauth.access_token,
+                        refresh_token=user.credentials.google_oauth.refresh_token,
+                    ),
+                    message_id=message_id,
                 )
-            ).decode(),
-        )
 
-        job = ProcessEmailJobData(email=email_data, user=user)
-        rich.print(job.model_dump_json())
+                email_data = MessageEmailData(
+                    message_id=email_content["id"],
+                    thread_id=email_content["threadId"],
+                    from_email=next(
+                        h["value"]
+                        for h in email_content["payload"]["headers"]
+                        if h["name"] == "From"
+                    ),
+                    from_name=next(
+                        h["value"].split("<")[0].strip(' "')
+                        for h in email_content["payload"]["headers"]
+                        if h["name"] == "From"
+                    ),
+                    to_email=next(
+                        h["value"]
+                        for h in email_content["payload"]["headers"]
+                        if h["name"] == "To"
+                    ),
+                    cc_email="",  # Add CC if present in headers
+                    bcc_email="",  # Add BCC if present in headers
+                    snippet=email_content["snippet"],
+                    subject=next(
+                        h["value"]
+                        for h in email_content["payload"]["headers"]
+                        if h["name"] == "Subject"
+                    ),
+                    html_content=base64.urlsafe_b64decode(
+                        next(
+                            part["body"]["data"]
+                            for part in email_content["payload"]["parts"]
+                            if part["mimeType"] == "text/html"
+                        )
+                    ).decode(),
+                )
 
-        # Queue the job for processing
-        # jobs.queue.enqueue(
-        #     process_email,
-        #     args=[job.model_dump_json()],
-        #     job_id=f"email_process_{email_data.message_id}",
-        #     job_timeout=300,  # 5 minutes timeout
-        # )
-        process_email(job.model_dump_json())
+                job = ProcessEmailJobData(email=email_data, user=user)
+                rich.print(job.model_dump_json())
+
+                # Queue the job for processing
+                # jobs.queue.enqueue(
+                #     process_email,
+                #     args=[job.model_dump_json()],
+                #     job_id=f"email_process_{email_data.message_id}",
+                #     job_timeout=300,  # 5 minutes timeout
+                # )
+                process_email(job.model_dump_json())
 
     except Exception as e:
         rich.print(e)
