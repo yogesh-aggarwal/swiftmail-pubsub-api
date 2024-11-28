@@ -96,12 +96,13 @@ def new_message():
         rich.print(job.model_dump_json())
 
         # Queue the job for processing
-        jobs.queue.enqueue(
-            process_email,
-            args=[job.model_dump_json()],
-            job_id=f"email_process_{email_data.message_id}",
-            job_timeout=300,  # 5 minutes timeout
-        )
+        # jobs.queue.enqueue(
+        #     process_email,
+        #     args=[job.model_dump_json()],
+        #     job_id=f"email_process_{email_data.message_id}",
+        #     job_timeout=300,  # 5 minutes timeout
+        # )
+        process_email(job.model_dump_json())
 
     except Exception as e:
         rich.print(e)
