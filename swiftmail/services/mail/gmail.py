@@ -263,3 +263,90 @@ class Gmail(MailService):
             .execute()
         )
         return history
+
+    def reply_to_message(
+        self,
+        *,
+        credentials: Credentials,
+        message_id: str,
+        reply_body: str,
+    ) -> str | None:
+        """Reply to a Gmail message.
+
+        Args:
+            credentials: Google OAuth2 credentials object
+            message_id: The Gmail message ID to reply to
+            reply_body: The HTML body of the reply
+
+        Returns:
+            The ID of the sent reply message, or None if sending failed
+        """
+        service = build("gmail", "v1", credentials=credentials)
+
+        try:
+            # Get the original message to extract headers
+            original = (
+                service.users()
+                .messages()
+                .get(
+                    userId="me",
+                    id=message_id,
+                    format="metadata",
+                    metadataHeaders=[
+                        "Subject",
+                        "From",
+                        "To",
+                        "Message-ID",
+                        "References",
+                        "In-Reply-To",
+                    ],
+                )
+                .execute()
+            )
+
+            # Extract headers from original message
+            headers = original["payload"]["headers"]
+            subject = next(h["value"] for h in headers if h["name"] == "Subject")
+            from_email = next(h["value"] for h in headers if h["name"] == "From")
+            message_id_header = next(
+                (h["value"] for h in headers if h["name"] == "Message-ID"), None
+            )
+            references = next(
+                (h["value"] for h in headers if h["name"] == "References"), ""
+            )
+
+            # Prepare reply headers
+            if not subject.startswith("Re:"):
+                subject = f"Re: {subject}"
+
+            # Create MIME message for reply
+            message = MIMEMultipart()
+            message["to"] = from_email
+            message["subject"] = subject
+
+            # Set threading headers
+            if message_id_header:
+                message["In-Reply-To"] = message_id_header
+                new_references = f"{references} {message_id_header}".strip()
+                message["References"] = new_references
+
+            # Add reply body
+            msg_content = MIMEText(reply_body, "html")
+            message.attach(msg_content)
+
+            # Encode and send
+            raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode("utf-8")
+            message_body = {"raw": raw_message, "threadId": original["threadId"]}
+
+            # Send the reply
+            sent_message = (
+                service.users()
+                .messages()
+                .send(userId="me", body=message_body)
+                .execute()
+            )
+            return sent_message["id"]
+
+        except Exception as error:
+            print(f"Failed to send reply: {error}")
+            return None

@@ -60,6 +60,9 @@ def get_user_from_request() -> User | None:
 
 
 def firebase_auth_middleware():
+    if request.path == "/queue/new-message":
+        return
+
     if request.method == "OPTIONS":
         return _handle_preflight()
 
