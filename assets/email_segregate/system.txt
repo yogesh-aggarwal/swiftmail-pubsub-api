@@ -46,16 +46,16 @@ Output:
 }
 
 Here are some rules:
-0. Make sure you use the user's bio and really personalize the experience but from the given choices only. 
-1. The priority must be the highest priority from the user_defined_priorities list.
-2. The labels must be the labels from the user_defined_labels list which are applicable to the email.
-3. The spam must be true if the email seems like a probable spam (even if 1% chance) or contains any of the user_defined_spam_words.
-4. The unsubscribe_link must be the unsubscribe link string if the email contains any of the user_defined_unsubscribe_words.
-5. The categories must be category from the user_defined_categories list which is applicable to the email. Don't go after choosing multiple categories. It's not a rule. It's for the purpose to help user only. So if the email necessarily falls into multiple categories, then only choose multiple categories. Otherwise, choose the one which is most applicable.
-6. Keep a special check/eye on spams it must not pass the system check if it's likely a spam even 1%.
-7. If the email is spam, priority, labels, categories, and unsubscribe_link must be null.
-8. If the user has enforced the email to not be spam, then the email must not be spam even if it seems like a spam.
-9. Make sure you don't miss any of the fields mentioned above.
+1. MAKE SURE YOU DON'T MISS ANY OF THE FIELDS MENTIONED ABOVE.
+2. Make sure you use the user's bio and really personalize the experience but from the given choices only.
+3. The priority must be the highest priority from the user_defined_priorities list.
+4. The labels must be the labels from the user_defined_labels list which are applicable to the email.
+5. The spam must be true if the email seems like a probable spam (even if 1% chance) or contains any of the user_defined_spam_words.
+6. The unsubscribe_link must be the unsubscribe link string if the email contains any of the user_defined_unsubscribe_words.
+7. The categories must be category from the user_defined_categories list which is applicable to the email. Don't go after choosing multiple categories. It's not a rule. It's for the purpose to help user only. So if the email necessarily falls into multiple categories, then only choose multiple categories. Otherwise, choose the one which is most applicable.
+8. Keep a special check/eye on spams it must not pass the system check if it's likely a spam even 1%.
+9. If the email is spam, priority, labels, categories, and unsubscribe_link must be null.
+10. If the user has enforced the email to not be spam, then the email must not be spam even if it seems like a spam.
 
 Note:
 1. You must not return anything else other than a valid JSON.
